@@ -1,16 +1,25 @@
 {
+  "id": "./",
   "name": "Daily Practice",
   "short_name": "Daily Practice",
+  "description": "Track daily study, gym and piano practice.",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#f7f5f1",
   "theme_color": "#f7f5f1",
   "icons": [
     {
-      "src": "icon.svg",
+      "src": "./icon.svg?v=6",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "./icon.svg?v=6",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
     }
   ]
 }

@@ -1,5 +1,10 @@
-const CACHE_NAME = "daily-practice-v5";
-const ASSETS = ["./", "index.html", "manifest.json", "icon.svg"];
+const CACHE_NAME = "daily-practice-v6";
+const ASSETS = [
+  "./",
+  "./index.html",
+  "./manifest.json?v=6",
+  "./icon.svg?v=6"
+];
 
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));
@@ -16,13 +21,17 @@ self.addEventListener("activate", event => {
 });
 
 self.addEventListener("fetch", event => {
+  if (event.request.method !== "GET") return;
+
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+        if (response && response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+        }
         return response;
       })
-      .catch(() => caches.match(event.request))
+      .catch(() => caches.match(event.request).then(cached => cached || caches.match("./index.html")))
   );
 });

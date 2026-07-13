@@ -1,0 +1,15 @@
+Upload these files to the ROOT of your GitHub Pages repository:
+
+1. index.html
+2. manifest.json
+3. service-worker.js
+4. your NEW icon.svg
+
+Important:
+- Replace the old files with these exact filenames.
+- Do not upload them as index (1).html or manifest (1).json.
+- Keep icon.svg in the same folder as index.html.
+- After GitHub Pages updates, delete the old Home Screen icon on iPhone.
+- Open the website in Safari and use Share > Add to Home Screen again.
+
+This package does not include icon.svg because it was not included with the three files you uploaded in this message.
