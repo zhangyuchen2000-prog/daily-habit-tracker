@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -13,7 +13,9 @@
       --text: #1f2937;
       --muted: #6b7280;
       --accent: #111827;
+      --soft: #eef1f4;
       --done: #dff4e4;
+      --selected: #dbeafe;
       --border: #e5e7eb;
     }
 
@@ -25,192 +27,457 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding: env(safe-area-inset-top) 18px env(safe-area-inset-bottom);
+      padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
     }
 
     .app {
-      max-width: 520px;
+      max-width: 620px;
       margin: 0 auto;
-      padding: 28px 0 40px;
+      padding: 22px 0 40px;
     }
 
     h1 {
-      font-size: 32px;
-      margin: 0 0 6px;
+      margin: 0 0 4px;
+      font-size: 30px;
       letter-spacing: -0.5px;
     }
 
-    .date {
+    .subtitle {
       color: var(--muted);
-      margin-bottom: 24px;
-      font-size: 16px;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 6px 18px rgba(17, 24, 39, 0.05);
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .calendar-header button {
+      border: none;
+      background: var(--soft);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .month-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .weekdays, .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+
+    .weekdays div {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      padding-bottom: 4px;
+    }
+
+    .day {
+      aspect-ratio: 1 / 1;
+      border: none;
+      border-radius: 12px;
+      background: transparent;
+      cursor: pointer;
+      font-size: 14px;
+      position: relative;
+    }
+
+    .day:hover { background: var(--soft); }
+    .day.empty { cursor: default; }
+    .day.today { outline: 2px solid var(--accent); }
+    .day.selected { background: var(--selected); font-weight: 700; }
+    .day.complete { background: var(--done); }
+
+    .day .dot {
+      position: absolute;
+      bottom: 5px;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+    }
+
+    .selected-date {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
     }
 
     .habit {
       display: flex;
       align-items: center;
-      gap: 14px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 18px;
-      margin-bottom: 14px;
-      cursor: pointer;
-      user-select: none;
-      transition: 0.2s ease;
-      box-shadow: 0 6px 18px rgba(17, 24, 39, 0.05);
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
     }
 
-    .habit.done {
-      background: var(--done);
-      transform: translateY(-1px);
-    }
+    .habit:last-of-type { border-bottom: none; }
 
-    .habit input {
-      width: 24px;
-      height: 24px;
+    .habit input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
       accent-color: var(--accent);
     }
 
-    .habit span {
-      font-size: 20px;
+    .habit label {
+      flex: 1;
+      font-size: 18px;
       font-weight: 600;
     }
 
-    .summary {
-      margin-top: 22px;
-      background: var(--accent);
-      color: white;
-      border-radius: 20px;
-      padding: 22px;
+    .piano-minutes {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .piano-minutes input {
+      width: 100px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 16px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .stat {
+      background: var(--soft);
+      border-radius: 16px;
+      padding: 16px;
       text-align: center;
     }
 
-    .score {
-      font-size: 38px;
+    .stat-value {
+      font-size: 28px;
       font-weight: 800;
       margin-bottom: 4px;
     }
 
-    .message {
-      opacity: 0.9;
-      font-size: 15px;
+    .stat-label {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 12px;
     }
 
     .reset {
       width: 100%;
-      margin-top: 14px;
-      border: 0;
+      border: none;
       background: transparent;
       color: var(--muted);
-      padding: 12px;
-      font-size: 14px;
+      padding: 10px;
       cursor: pointer;
-    }
-
-    .footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: 13px;
-      margin-top: 22px;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
   <main class="app">
     <h1>Daily Check</h1>
-    <div class="date" id="date"></div>
+    <div class="subtitle">记录每日学习、健身和钢琴练习</div>
 
-    <label class="habit" id="study-card">
-      <input type="checkbox" id="study" />
-      <span>📚 Study</span>
-    </label>
+    <section class="card">
+      <div class="calendar-header">
+        <button id="prevMonth" aria-label="Previous month">‹</button>
+        <div class="month-title" id="monthTitle"></div>
+        <button id="nextMonth" aria-label="Next month">›</button>
+      </div>
 
-    <label class="habit" id="gym-card">
-      <input type="checkbox" id="gym" />
-      <span>🏋️ Gym</span>
-    </label>
+      <div class="weekdays">
+        <div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div><div>日</div>
+      </div>
 
-    <label class="habit" id="piano-card">
-      <input type="checkbox" id="piano" />
-      <span>🎹 Piano</span>
-    </label>
-
-    <section class="summary">
-      <div class="score" id="score">0 / 3</div>
-      <div class="message" id="message">A fresh day starts here.</div>
+      <div class="calendar-grid" id="calendarGrid"></div>
     </section>
 
-    <button class="reset" id="reset">Reset today</button>
+    <section class="card">
+      <div class="selected-date" id="selectedDateLabel"></div>
 
-    <div class="footer">Your checks are saved on this device.</div>
+      <div class="habit">
+        <input type="checkbox" id="study" />
+        <label for="study">📚 学习</label>
+      </div>
+
+      <div class="habit">
+        <input type="checkbox" id="gym" />
+        <label for="gym">🏋️ 健身</label>
+      </div>
+
+      <div class="habit">
+        <input type="checkbox" id="piano" />
+        <label for="piano">🎹 钢琴</label>
+      </div>
+
+      <div class="piano-minutes">
+        <span>钢琴时间</span>
+        <input id="pianoMinutes" type="number" min="0" step="5" inputmode="numeric" placeholder="0" />
+        <span>分钟</span>
+      </div>
+
+      <button class="reset" id="resetDay">清空这一天</button>
+    </section>
+
+    <section class="card">
+      <div class="selected-date">本月统计</div>
+
+      <div class="stats-grid">
+        <div class="stat">
+          <div class="stat-value" id="studyCount">0</div>
+          <div class="stat-label">学习天数</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-value" id="gymCount">0</div>
+          <div class="stat-label">健身天数</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-value" id="pianoCount">0</div>
+          <div class="stat-label">钢琴天数</div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-value" id="pianoHours">0 h</div>
+          <div class="stat-label">钢琴累计时间</div>
+        </div>
+      </div>
+
+      <div class="hint">绿色日期表示三项全部完成；有黑点表示当天至少记录了一项。</div>
+    </section>
   </main>
 
   <script>
-    const habits = ["study", "gym", "piano"];
-    const today = new Date().toISOString().slice(0, 10);
-    const storageKey = "habitTracker-" + today;
+    const STORAGE_KEY = "habitTrackerDataV2";
 
-    document.getElementById("date").textContent =
-      new Date().toLocaleDateString(undefined, {
-        weekday: "long",
-        day: "numeric",
-        month: "long"
-      });
+    let data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    let selectedDate = toDateKey(new Date());
+    let shownMonth = new Date();
+    shownMonth.setDate(1);
 
-    function loadData() {
-      const saved = JSON.parse(localStorage.getItem(storageKey) || "{}");
-      habits.forEach(habit => {
-        document.getElementById(habit).checked = Boolean(saved[habit]);
-      });
-      updateUI();
+    const studyEl = document.getElementById("study");
+    const gymEl = document.getElementById("gym");
+    const pianoEl = document.getElementById("piano");
+    const pianoMinutesEl = document.getElementById("pianoMinutes");
+
+    function toDateKey(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
     }
 
-    function saveData() {
-      const data = {};
-      habits.forEach(habit => {
-        data[habit] = document.getElementById(habit).checked;
-      });
-      localStorage.setItem(storageKey, JSON.stringify(data));
-      updateUI();
+    function getRecord(dateKey) {
+      return data[dateKey] || {
+        study: false,
+        gym: false,
+        piano: false,
+        pianoMinutes: 0
+      };
     }
 
-    function updateUI() {
-      let completed = 0;
+    function saveAll() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
 
-      habits.forEach(habit => {
-        const checkbox = document.getElementById(habit);
-        const card = document.getElementById(habit + "-card");
+    function saveSelectedDay() {
+      const minutes = Math.max(0, Number(pianoMinutesEl.value) || 0);
 
-        if (checkbox.checked) {
-          completed++;
-          card.classList.add("done");
-        } else {
-          card.classList.remove("done");
+      data[selectedDate] = {
+        study: studyEl.checked,
+        gym: gymEl.checked,
+        piano: pianoEl.checked || minutes > 0,
+        pianoMinutes: minutes
+      };
+
+      const r = data[selectedDate];
+      if (!r.study && !r.gym && !r.piano && r.pianoMinutes === 0) {
+        delete data[selectedDate];
+      }
+
+      saveAll();
+      loadSelectedDay();
+      renderCalendar();
+      updateStats();
+    }
+
+    function loadSelectedDay() {
+      const record = getRecord(selectedDate);
+
+      studyEl.checked = record.study;
+      gymEl.checked = record.gym;
+      pianoEl.checked = record.piano;
+      pianoMinutesEl.value = record.pianoMinutes || "";
+
+      const date = new Date(selectedDate + "T12:00:00");
+      document.getElementById("selectedDateLabel").textContent =
+        date.toLocaleDateString("zh-CN", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          weekday: "long"
+        });
+    }
+
+    function renderCalendar() {
+      const grid = document.getElementById("calendarGrid");
+      grid.innerHTML = "";
+
+      const year = shownMonth.getFullYear();
+      const month = shownMonth.getMonth();
+
+      document.getElementById("monthTitle").textContent =
+        shownMonth.toLocaleDateString("zh-CN", {
+          year: "numeric",
+          month: "long"
+        });
+
+      const firstDay = new Date(year, month, 1);
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      let mondayIndex = firstDay.getDay() - 1;
+      if (mondayIndex < 0) mondayIndex = 6;
+
+      for (let i = 0; i < mondayIndex; i++) {
+        const empty = document.createElement("div");
+        empty.className = "day empty";
+        grid.appendChild(empty);
+      }
+
+      const todayKey = toDateKey(new Date());
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month, day);
+        const dateKey = toDateKey(date);
+        const record = data[dateKey];
+
+        const button = document.createElement("button");
+        button.className = "day";
+        button.textContent = day;
+
+        if (dateKey === todayKey) button.classList.add("today");
+        if (dateKey === selectedDate) button.classList.add("selected");
+
+        if (record) {
+          const complete = record.study && record.gym && record.piano;
+          if (complete) button.classList.add("complete");
+
+          const hasAny =
+            record.study ||
+            record.gym ||
+            record.piano ||
+            Number(record.pianoMinutes) > 0;
+
+          if (hasAny && !complete) {
+            const dot = document.createElement("span");
+            dot.className = "dot";
+            button.appendChild(dot);
+          }
+        }
+
+        button.addEventListener("click", () => {
+          selectedDate = dateKey;
+          loadSelectedDay();
+          renderCalendar();
+        });
+
+        grid.appendChild(button);
+      }
+    }
+
+    function updateStats() {
+      const year = shownMonth.getFullYear();
+      const month = shownMonth.getMonth();
+
+      let studyCount = 0;
+      let gymCount = 0;
+      let pianoCount = 0;
+      let totalPianoMinutes = 0;
+
+      Object.entries(data).forEach(([dateKey, record]) => {
+        const date = new Date(dateKey + "T12:00:00");
+
+        if (date.getFullYear() === year && date.getMonth() === month) {
+          if (record.study) studyCount++;
+          if (record.gym) gymCount++;
+          if (record.piano) pianoCount++;
+          totalPianoMinutes += Number(record.pianoMinutes) || 0;
         }
       });
 
-      document.getElementById("score").textContent = completed + " / 3";
+      document.getElementById("studyCount").textContent = studyCount;
+      document.getElementById("gymCount").textContent = gymCount;
+      document.getElementById("pianoCount").textContent = pianoCount;
 
-      const messages = [
-        "A fresh day starts here.",
-        "Good start. Keep going.",
-        "Almost there.",
-        "Everything done. Lovely work."
-      ];
-
-      document.getElementById("message").textContent = messages[completed];
+      const hours = totalPianoMinutes / 60;
+      document.getElementById("pianoHours").textContent =
+        hours < 10 ? `${hours.toFixed(1)} h` : `${hours.toFixed(0)} h`;
     }
 
-    habits.forEach(habit => {
-      document.getElementById(habit).addEventListener("change", saveData);
-    });
+    function changeMonth(offset) {
+      shownMonth = new Date(
+        shownMonth.getFullYear(),
+        shownMonth.getMonth() + offset,
+        1
+      );
 
-    document.getElementById("reset").addEventListener("click", () => {
-      habits.forEach(habit => {
-        document.getElementById(habit).checked = false;
-      });
-      saveData();
+      selectedDate = toDateKey(new Date(
+        shownMonth.getFullYear(),
+        shownMonth.getMonth(),
+        1
+      ));
+
+      loadSelectedDay();
+      renderCalendar();
+      updateStats();
+    }
+
+    studyEl.addEventListener("change", saveSelectedDay);
+    gymEl.addEventListener("change", saveSelectedDay);
+    pianoEl.addEventListener("change", saveSelectedDay);
+
+    pianoMinutesEl.addEventListener("change", saveSelectedDay);
+    pianoMinutesEl.addEventListener("blur", saveSelectedDay);
+
+    document.getElementById("prevMonth").addEventListener("click", () => changeMonth(-1));
+    document.getElementById("nextMonth").addEventListener("click", () => changeMonth(1));
+
+    document.getElementById("resetDay").addEventListener("click", () => {
+      delete data[selectedDate];
+      saveAll();
+      loadSelectedDay();
+      renderCalendar();
+      updateStats();
     });
 
     if ("serviceWorker" in navigator) {
@@ -219,7 +486,9 @@
       });
     }
 
-    loadData();
+    loadSelectedDay();
+    renderCalendar();
+    updateStats();
   </script>
 </body>
 </html>
