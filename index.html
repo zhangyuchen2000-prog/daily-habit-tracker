@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#f4f1ea" />
+  <title>Daily Habit Tracker</title>
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    :root {
+      --bg: #f4f1ea;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #111827;
+      --done: #dff4e4;
+      --border: #e5e7eb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: env(safe-area-inset-top) 18px env(safe-area-inset-bottom);
+    }
+
+    .app {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 28px 0 40px;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin: 0 0 6px;
+      letter-spacing: -0.5px;
+    }
+
+    .date {
+      color: var(--muted);
+      margin-bottom: 24px;
+      font-size: 16px;
+    }
+
+    .habit {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 14px;
+      cursor: pointer;
+      user-select: none;
+      transition: 0.2s ease;
+      box-shadow: 0 6px 18px rgba(17, 24, 39, 0.05);
+    }
+
+    .habit.done {
+      background: var(--done);
+      transform: translateY(-1px);
+    }
+
+    .habit input {
+      width: 24px;
+      height: 24px;
+      accent-color: var(--accent);
+    }
+
+    .habit span {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .summary {
+      margin-top: 22px;
+      background: var(--accent);
+      color: white;
+      border-radius: 20px;
+      padding: 22px;
+      text-align: center;
+    }
+
+    .score {
+      font-size: 38px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .message {
+      opacity: 0.9;
+      font-size: 15px;
+    }
+
+    .reset {
+      width: 100%;
+      margin-top: 14px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      padding: 12px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 22px;
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <h1>Daily Check</h1>
+    <div class="date" id="date"></div>
+
+    <label class="habit" id="study-card">
+      <input type="checkbox" id="study" />
+      <span>📚 Study</span>
+    </label>
+
+    <label class="habit" id="gym-card">
+      <input type="checkbox" id="gym" />
+      <span>🏋️ Gym</span>
+    </label>
+
+    <label class="habit" id="piano-card">
+      <input type="checkbox" id="piano" />
+      <span>🎹 Piano</span>
+    </label>
+
+    <section class="summary">
+      <div class="score" id="score">0 / 3</div>
+      <div class="message" id="message">A fresh day starts here.</div>
+    </section>
+
+    <button class="reset" id="reset">Reset today</button>
+
+    <div class="footer">Your checks are saved on this device.</div>
+  </main>
+
+  <script>
+    const habits = ["study", "gym", "piano"];
+    const today = new Date().toISOString().slice(0, 10);
+    const storageKey = "habitTracker-" + today;
+
+    document.getElementById("date").textContent =
+      new Date().toLocaleDateString(undefined, {
+        weekday: "long",
+        day: "numeric",
+        month: "long"
+      });
+
+    function loadData() {
+      const saved = JSON.parse(localStorage.getItem(storageKey) || "{}");
+      habits.forEach(habit => {
+        document.getElementById(habit).checked = Boolean(saved[habit]);
+      });
+      updateUI();
+    }
+
+    function saveData() {
+      const data = {};
+      habits.forEach(habit => {
+        data[habit] = document.getElementById(habit).checked;
+      });
+      localStorage.setItem(storageKey, JSON.stringify(data));
+      updateUI();
+    }
+
+    function updateUI() {
+      let completed = 0;
+
+      habits.forEach(habit => {
+        const checkbox = document.getElementById(habit);
+        const card = document.getElementById(habit + "-card");
+
+        if (checkbox.checked) {
+          completed++;
+          card.classList.add("done");
+        } else {
+          card.classList.remove("done");
+        }
+      });
+
+      document.getElementById("score").textContent = completed + " / 3";
+
+      const messages = [
+        "A fresh day starts here.",
+        "Good start. Keep going.",
+        "Almost there.",
+        "Everything done. Lovely work."
+      ];
+
+      document.getElementById("message").textContent = messages[completed];
+    }
+
+    habits.forEach(habit => {
+      document.getElementById(habit).addEventListener("change", saveData);
+    });
+
+    document.getElementById("reset").addEventListener("click", () => {
+      habits.forEach(habit => {
+        document.getElementById(habit).checked = false;
+      });
+      saveData();
+    });
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js").catch(() => {});
+      });
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
