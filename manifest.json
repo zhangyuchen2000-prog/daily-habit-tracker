@@ -1,10 +1,10 @@
 {
-  "name": "Daily Habit Tracker",
-  "short_name": "Daily Check",
+  "name": "Daily Practice",
+  "short_name": "Daily Practice",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#f4f1ea",
-  "theme_color": "#f4f1ea",
+  "background_color": "#f7f5f1",
+  "theme_color": "#f7f5f1",
   "icons": [
     {
       "src": "icon.svg",

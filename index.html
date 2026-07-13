@@ -1,294 +1,658 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#f4f1ea" />
-  <title>Daily Habit Tracker</title>
+  <meta name="theme-color" content="#f7f5f1" />
+  <title>Daily Practice</title>
   <link rel="manifest" href="manifest.json" />
   <style>
     :root {
-      --bg: #f4f1ea;
-      --card: #ffffff;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --accent: #111827;
-      --soft: #eef1f4;
-      --done: #dff4e4;
-      --selected: #dbeafe;
-      --border: #e5e7eb;
+      --bg: #f7f5f1;
+      --surface: rgba(255, 255, 255, 0.88);
+      --surface-strong: #ffffff;
+      --text: #20211f;
+      --muted: #74766f;
+      --line: #e7e4dc;
+      --accent: #2e3b32;
+      --accent-soft: #e8eee9;
+      --selected: #dfe7e1;
+      --danger: #8a3f3f;
+      --shadow: 0 18px 45px rgba(31, 35, 31, 0.08);
     }
 
     * { box-sizing: border-box; }
 
+    html { background: var(--bg); }
+
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text);
       min-height: 100vh;
-      padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.96), transparent 34%),
+        linear-gradient(180deg, #faf8f4 0%, #f3f1ec 100%);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      padding:
+        calc(env(safe-area-inset-top) + 18px)
+        18px
+        calc(env(safe-area-inset-bottom) + 34px);
     }
 
+    button, input, textarea { font: inherit; }
+
     .app {
-      max-width: 620px;
+      width: min(100%, 720px);
       margin: 0 auto;
-      padding: 22px 0 40px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      margin: 0 0 7px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
     }
 
     h1 {
-      margin: 0 0 4px;
-      font-size: 30px;
-      letter-spacing: -0.5px;
+      margin: 0;
+      font-size: clamp(32px, 7vw, 46px);
+      line-height: 1;
+      font-weight: 650;
+      letter-spacing: -0.045em;
     }
 
-    .subtitle {
-      color: var(--muted);
-      margin-bottom: 18px;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 18px;
-      margin-bottom: 16px;
-      box-shadow: 0 6px 18px rgba(17, 24, 39, 0.05);
-    }
-
-    .calendar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-    }
-
-    .calendar-header button {
-      border: none;
-      background: var(--soft);
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      font-size: 18px;
+    .pill-button, .secondary-button, .primary-button {
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 650;
       cursor: pointer;
+      transition: 0.2s ease;
     }
+
+    .pill-button, .secondary-button {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.72);
+      color: var(--text);
+    }
+
+    .primary-button {
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: white;
+    }
+
+    .pill-button:hover, .secondary-button:hover, .primary-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid rgba(231, 228, 220, 0.92);
+      border-radius: 26px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .calendar-header, .section-header, .manager-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .calendar-header { margin-bottom: 18px; }
 
     .month-title {
-      font-size: 20px;
-      font-weight: 700;
+      font-size: 19px;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+    }
+
+    .month-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-button {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.72);
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--text);
+      transition: 0.2s ease;
+    }
+
+    .icon-button:hover {
+      background: var(--surface-strong);
+      transform: translateY(-1px);
     }
 
     .weekdays, .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
+      gap: 7px;
     }
 
     .weekdays div {
+      padding: 4px 0 8px;
       text-align: center;
       color: var(--muted);
-      font-size: 12px;
-      padding-bottom: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
     .day {
+      position: relative;
       aspect-ratio: 1 / 1;
-      border: none;
-      border-radius: 12px;
+      border: 0;
+      border-radius: 14px;
       background: transparent;
+      color: var(--text);
       cursor: pointer;
       font-size: 14px;
-      position: relative;
+      font-weight: 560;
+      transition: 0.18s ease;
     }
 
-    .day:hover { background: var(--soft); }
+    .day:hover { background: #f0eee8; }
     .day.empty { cursor: default; }
-    .day.today { outline: 2px solid var(--accent); }
-    .day.selected { background: var(--selected); font-weight: 700; }
-    .day.complete { background: var(--done); }
+    .day.today { box-shadow: inset 0 0 0 1.5px var(--accent); }
+    .day.selected { background: var(--selected); font-weight: 720; }
+    .day.complete { background: var(--accent); color: white; }
 
-    .day .dot {
+    .dot {
       position: absolute;
-      bottom: 5px;
       left: 50%;
-      width: 5px;
-      height: 5px;
+      bottom: 6px;
+      width: 4px;
+      height: 4px;
       border-radius: 50%;
       transform: translateX(-50%);
-      background: var(--accent);
+      background: currentColor;
+      opacity: 0.78;
     }
 
-    .selected-date {
-      font-size: 18px;
+    .section-title {
+      margin: 0 0 4px;
+      font-size: 22px;
+      font-weight: 650;
+      letter-spacing: -0.03em;
+    }
+
+    .section-subtitle {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .section-action {
+      border: 0;
+      background: transparent;
+      color: var(--accent);
+      cursor: pointer;
+      font-size: 13px;
       font-weight: 700;
-      margin-bottom: 12px;
+      padding: 8px 0;
     }
 
-    .habit {
+    .habit-list, .subject-list {
+      border-top: 1px solid var(--line);
+    }
+
+    .habit-row, .subject-row {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--border);
+      gap: 14px;
+      min-height: 62px;
+      border-bottom: 1px solid var(--line);
     }
 
-    .habit:last-of-type { border-bottom: none; }
-
-    .habit input[type="checkbox"] {
-      width: 22px;
-      height: 22px;
+    .habit-row input[type="checkbox"],
+    .subject-row input[type="checkbox"] {
+      width: 21px;
+      height: 21px;
+      margin: 0;
       accent-color: var(--accent);
+      cursor: pointer;
     }
 
-    .habit label {
+    .habit-name, .subject-name {
       flex: 1;
-      font-size: 18px;
-      font-weight: 600;
+      font-size: 16px;
+      font-weight: 590;
     }
 
-    .piano-minutes {
+    .minutes-wrap {
       display: flex;
       align-items: center;
       gap: 8px;
+    }
+
+    .minutes-wrap input {
+      width: 76px;
+      border: 1px solid var(--line);
+      background: #fbfaf7;
+      border-radius: 11px;
+      padding: 8px 10px;
+      text-align: right;
+      color: var(--text);
+      outline: none;
+    }
+
+    .minutes-wrap input:focus,
+    .text-input:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(46, 59, 50, 0.08);
+    }
+
+    .unit {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .subsection-label {
+      margin: 18px 0 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 86px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fbfaf7;
+      padding: 12px 13px;
+      color: var(--text);
+      outline: none;
+    }
+
+    .panel-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
       margin-top: 14px;
     }
 
-    .piano-minutes input {
-      width: 100px;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      font-size: 16px;
+    .text-button {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 8px 0;
+      font-size: 13px;
+      font-weight: 600;
     }
+
+    .text-button:hover { color: var(--text); }
+    .danger { color: var(--danger); }
 
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-top: 18px;
     }
 
-    .stat {
-      background: var(--soft);
-      border-radius: 16px;
-      padding: 16px;
+    .stat-card {
+      background: rgba(247, 245, 241, 0.9);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 17px 10px;
       text-align: center;
     }
 
     .stat-value {
-      font-size: 28px;
-      font-weight: 800;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
+      font-size: 25px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
     }
 
     .stat-label {
       color: var(--muted);
-      font-size: 13px;
+      font-size: 12px;
+      line-height: 1.35;
     }
 
-    .hint {
+    .subject-breakdown {
+      margin-top: 18px;
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+    }
+
+    .breakdown-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .breakdown-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 590;
+    }
+
+    .breakdown-meta {
       color: var(--muted);
       font-size: 13px;
-      margin-top: 12px;
     }
 
-    .reset {
-      width: 100%;
-      border: none;
+    .legend {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .manager {
+      display: none;
+      margin-top: 16px;
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+    }
+
+    .manager.open { display: block; }
+
+    .add-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .text-input {
+      flex: 1;
+      min-width: 0;
+      border: 1px solid var(--line);
+      background: #fbfaf7;
+      border-radius: 13px;
+      padding: 11px 13px;
+      color: var(--text);
+      outline: none;
+    }
+
+    .subject-manage-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .subject-manage-row .subject-name {
+      font-size: 15px;
+    }
+
+    .archive-button {
+      border: 1px solid var(--line);
       background: transparent;
+      border-radius: 10px;
+      padding: 7px 10px;
       color: var(--muted);
-      padding: 10px;
       cursor: pointer;
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .archive-button:hover {
+      background: #f3f1ec;
+      color: var(--text);
+    }
+
+    .backup-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .file-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .file-label input { display: none; }
+
+    .empty-state {
+      color: var(--muted);
       font-size: 14px;
+      padding: 14px 0;
+    }
+
+    @media (max-width: 650px) {
+      .panel { padding: 18px; border-radius: 22px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .topbar { align-items: center; }
+      .breakdown-row { grid-template-columns: minmax(0, 1fr) auto; }
+      .breakdown-row .breakdown-meta:last-child { grid-column: 2; }
+      .minutes-wrap input { width: 68px; }
     }
   </style>
 </head>
 <body>
   <main class="app">
-    <h1>Daily Check</h1>
-    <div class="subtitle">记录每日学习、健身和钢琴练习</div>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Personal Routine</p>
+        <h1>Daily Practice</h1>
+      </div>
+      <button class="pill-button" id="todayButton">Today</button>
+    </header>
 
-    <section class="card">
+    <section class="panel">
       <div class="calendar-header">
-        <button id="prevMonth" aria-label="Previous month">‹</button>
         <div class="month-title" id="monthTitle"></div>
-        <button id="nextMonth" aria-label="Next month">›</button>
+        <div class="month-controls">
+          <button class="icon-button" id="prevMonth" aria-label="Previous month">‹</button>
+          <button class="icon-button" id="nextMonth" aria-label="Next month">›</button>
+        </div>
       </div>
 
       <div class="weekdays">
-        <div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div><div>日</div>
+        <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div>
+        <div>Fri</div><div>Sat</div><div>Sun</div>
       </div>
-
       <div class="calendar-grid" id="calendarGrid"></div>
     </section>
 
-    <section class="card">
-      <div class="selected-date" id="selectedDateLabel"></div>
-
-      <div class="habit">
-        <input type="checkbox" id="study" />
-        <label for="study">📚 学习</label>
+    <section class="panel">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title" id="selectedDateLabel"></h2>
+          <p class="section-subtitle">Record what you completed on this date.</p>
+        </div>
       </div>
 
-      <div class="habit">
-        <input type="checkbox" id="gym" />
-        <label for="gym">🏋️ 健身</label>
+      <div class="subsection-label">Study</div>
+      <div class="subject-list" id="dailySubjectList"></div>
+
+      <div class="habit-list">
+        <label class="habit-row">
+          <input type="checkbox" id="gym" />
+          <span class="habit-name">Gym</span>
+        </label>
+
+        <label class="habit-row">
+          <input type="checkbox" id="piano" />
+          <span class="habit-name">Piano</span>
+          <span class="minutes-wrap">
+            <input id="pianoMinutes" type="number" min="0" step="5" inputmode="numeric" placeholder="0" />
+            <span class="unit">min</span>
+          </span>
+        </label>
       </div>
 
-      <div class="habit">
-        <input type="checkbox" id="piano" />
-        <label for="piano">🎹 钢琴</label>
+      <div class="subsection-label">Daily note</div>
+      <textarea id="dailyNote" placeholder="Optional note for this day"></textarea>
+
+      <div class="panel-footer">
+        <button class="text-button" id="manageSubjectsButton">Manage subjects</button>
+        <button class="text-button danger" id="resetDay">Clear this day</button>
       </div>
 
-      <div class="piano-minutes">
-        <span>钢琴时间</span>
-        <input id="pianoMinutes" type="number" min="0" step="5" inputmode="numeric" placeholder="0" />
-        <span>分钟</span>
-      </div>
+      <div class="manager" id="subjectManager">
+        <div class="manager-header">
+          <div>
+            <h3 class="section-title" style="font-size:18px;">Subjects</h3>
+            <p class="section-subtitle">Add current courses or archive completed ones.</p>
+          </div>
+        </div>
 
-      <button class="reset" id="resetDay">清空这一天</button>
+        <div class="add-row">
+          <input class="text-input" id="newSubjectName" type="text" maxlength="60" placeholder="e.g. COMPSCI 230" />
+          <button class="primary-button" id="addSubjectButton">Add</button>
+        </div>
+
+        <div class="subsection-label">Active</div>
+        <div id="activeSubjectManagerList"></div>
+
+        <div class="subsection-label">Archived</div>
+        <div id="archivedSubjectManagerList"></div>
+      </div>
     </section>
 
-    <section class="card">
-      <div class="selected-date">本月统计</div>
+    <section class="panel">
+      <h2 class="section-title">Monthly Summary</h2>
+      <p class="section-subtitle" id="summaryMonth"></p>
 
       <div class="stats-grid">
-        <div class="stat">
-          <div class="stat-value" id="studyCount">0</div>
-          <div class="stat-label">学习天数</div>
+        <div class="stat-card">
+          <div class="stat-value" id="studyDays">0</div>
+          <div class="stat-label">Study days</div>
         </div>
-
-        <div class="stat">
+        <div class="stat-card">
+          <div class="stat-value" id="studyHours">0.0</div>
+          <div class="stat-label">Study hours</div>
+        </div>
+        <div class="stat-card">
           <div class="stat-value" id="gymCount">0</div>
-          <div class="stat-label">健身天数</div>
+          <div class="stat-label">Gym days</div>
         </div>
-
-        <div class="stat">
+        <div class="stat-card">
           <div class="stat-value" id="pianoCount">0</div>
-          <div class="stat-label">钢琴天数</div>
+          <div class="stat-label">Piano days</div>
         </div>
-
-        <div class="stat">
-          <div class="stat-value" id="pianoHours">0 h</div>
-          <div class="stat-label">钢琴累计时间</div>
+        <div class="stat-card">
+          <div class="stat-value" id="pianoHours">0.0</div>
+          <div class="stat-label">Piano hours</div>
         </div>
       </div>
 
-      <div class="hint">绿色日期表示三项全部完成；有黑点表示当天至少记录了一项。</div>
+      <div class="subject-breakdown">
+        <div class="subsection-label" style="margin-top:0;">Study by subject</div>
+        <div id="subjectBreakdown"></div>
+      </div>
+
+      <div class="legend">
+        A dark date means study, gym and piano were all completed. A small dot means at least one item was recorded.
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="section-title">Backup</h2>
+      <p class="section-subtitle">Keep a copy before changing phones or clearing browser data.</p>
+      <div class="backup-actions">
+        <button class="secondary-button" id="exportButton">Export backup</button>
+        <label class="secondary-button file-label">
+          Import backup
+          <input id="importFile" type="file" accept="application/json" />
+        </label>
+      </div>
     </section>
   </main>
 
   <script>
-    const STORAGE_KEY = "habitTrackerDataV2";
+    const STORAGE_KEY = "dailyPracticeV4";
+    const OLD_STORAGE_KEY = "habitTrackerDataV2";
 
-    let data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    const defaultState = {
+      subjects: [
+        { id: "general-study", name: "General Study", archived: false, createdAt: new Date().toISOString() }
+      ],
+      records: {}
+    };
+
+    let state = loadState();
     let selectedDate = toDateKey(new Date());
     let shownMonth = new Date();
     shownMonth.setDate(1);
 
-    const studyEl = document.getElementById("study");
     const gymEl = document.getElementById("gym");
     const pianoEl = document.getElementById("piano");
     const pianoMinutesEl = document.getElementById("pianoMinutes");
+    const noteEl = document.getElementById("dailyNote");
+
+    function loadState() {
+      const current = localStorage.getItem(STORAGE_KEY);
+      if (current) {
+        try {
+          const parsed = JSON.parse(current);
+          if (parsed.subjects && parsed.records) return parsed;
+        } catch {}
+      }
+
+      const old = localStorage.getItem(OLD_STORAGE_KEY);
+      if (old) {
+        try {
+          const oldRecords = JSON.parse(old);
+          const migrated = structuredClone(defaultState);
+
+          Object.entries(oldRecords).forEach(([dateKey, record]) => {
+            migrated.records[dateKey] = {
+              gym: Boolean(record.gym),
+              piano: Boolean(record.piano),
+              pianoMinutes: Number(record.pianoMinutes) || 0,
+              note: "",
+              subjects: {
+                "general-study": {
+                  done: Boolean(record.study),
+                  minutes: 0
+                }
+              }
+            };
+          });
+
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+          return migrated;
+        } catch {}
+      }
+
+      return structuredClone(defaultState);
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
 
     function toDateKey(date) {
       const year = date.getFullYear();
@@ -298,34 +662,99 @@
     }
 
     function getRecord(dateKey) {
-      return data[dateKey] || {
-        study: false,
+      return state.records[dateKey] || {
         gym: false,
         piano: false,
-        pianoMinutes: 0
+        pianoMinutes: 0,
+        note: "",
+        subjects: {}
       };
     }
 
-    function saveAll() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    function getActiveSubjects() {
+      return state.subjects.filter(subject => !subject.archived);
+    }
+
+    function getAllSubjectsMap() {
+      return Object.fromEntries(state.subjects.map(subject => [subject.id, subject]));
+    }
+
+    function createId(name) {
+      return name.toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "") + "-" + Date.now();
+    }
+
+    function renderDailySubjects() {
+      const container = document.getElementById("dailySubjectList");
+      container.innerHTML = "";
+      const record = getRecord(selectedDate);
+      const active = getActiveSubjects();
+
+      if (active.length === 0) {
+        container.innerHTML = '<div class="empty-state">No active subjects. Add one in Manage subjects.</div>';
+        return;
+      }
+
+      active.forEach(subject => {
+        const subjectRecord = record.subjects?.[subject.id] || { done: false, minutes: 0 };
+
+        const row = document.createElement("label");
+        row.className = "subject-row";
+        row.innerHTML = `
+          <input type="checkbox" data-subject-check="${subject.id}" ${subjectRecord.done ? "checked" : ""} />
+          <span class="subject-name">${escapeHtml(subject.name)}</span>
+          <span class="minutes-wrap">
+            <input type="number" min="0" step="5" inputmode="numeric"
+              placeholder="0" value="${subjectRecord.minutes || ""}"
+              data-subject-minutes="${subject.id}" />
+            <span class="unit">min</span>
+          </span>
+        `;
+        container.appendChild(row);
+      });
+
+      container.querySelectorAll("[data-subject-check]").forEach(el => {
+        el.addEventListener("change", saveSelectedDay);
+      });
+
+      container.querySelectorAll("[data-subject-minutes]").forEach(el => {
+        el.addEventListener("change", saveSelectedDay);
+        el.addEventListener("blur", saveSelectedDay);
+      });
     }
 
     function saveSelectedDay() {
-      const minutes = Math.max(0, Number(pianoMinutesEl.value) || 0);
+      const existing = getRecord(selectedDate);
+      const subjects = { ...(existing.subjects || {}) };
 
-      data[selectedDate] = {
-        study: studyEl.checked,
+      getActiveSubjects().forEach(subject => {
+        const checkbox = document.querySelector(`[data-subject-check="${subject.id}"]`);
+        const minutesInput = document.querySelector(`[data-subject-minutes="${subject.id}"]`);
+        const minutes = Math.max(0, Number(minutesInput?.value) || 0);
+
+        subjects[subject.id] = {
+          done: Boolean(checkbox?.checked) || minutes > 0,
+          minutes
+        };
+      });
+
+      const record = {
         gym: gymEl.checked,
-        piano: pianoEl.checked || minutes > 0,
-        pianoMinutes: minutes
+        piano: pianoEl.checked || (Number(pianoMinutesEl.value) || 0) > 0,
+        pianoMinutes: Math.max(0, Number(pianoMinutesEl.value) || 0),
+        note: noteEl.value.trim(),
+        subjects
       };
 
-      const r = data[selectedDate];
-      if (!r.study && !r.gym && !r.piano && r.pianoMinutes === 0) {
-        delete data[selectedDate];
-      }
+      const hasStudy = Object.values(subjects).some(item => item.done || item.minutes > 0);
+      const hasAnything = hasStudy || record.gym || record.piano || record.pianoMinutes > 0 || record.note;
 
-      saveAll();
+      if (hasAnything) state.records[selectedDate] = record;
+      else delete state.records[selectedDate];
+
+      saveState();
       loadSelectedDay();
       renderCalendar();
       updateStats();
@@ -333,20 +762,24 @@
 
     function loadSelectedDay() {
       const record = getRecord(selectedDate);
-
-      studyEl.checked = record.study;
       gymEl.checked = record.gym;
       pianoEl.checked = record.piano;
       pianoMinutesEl.value = record.pianoMinutes || "";
+      noteEl.value = record.note || "";
 
       const date = new Date(selectedDate + "T12:00:00");
       document.getElementById("selectedDateLabel").textContent =
-        date.toLocaleDateString("zh-CN", {
-          year: "numeric",
-          month: "long",
+        date.toLocaleDateString("en-NZ", {
+          weekday: "long",
           day: "numeric",
-          weekday: "long"
+          month: "long"
         });
+
+      renderDailySubjects();
+    }
+
+    function recordHasStudy(record) {
+      return Object.values(record.subjects || {}).some(item => item.done || Number(item.minutes) > 0);
     }
 
     function renderCalendar() {
@@ -355,12 +788,13 @@
 
       const year = shownMonth.getFullYear();
       const month = shownMonth.getMonth();
+      const monthName = shownMonth.toLocaleDateString("en-NZ", {
+        month: "long",
+        year: "numeric"
+      });
 
-      document.getElementById("monthTitle").textContent =
-        shownMonth.toLocaleDateString("zh-CN", {
-          year: "numeric",
-          month: "long"
-        });
+      document.getElementById("monthTitle").textContent = monthName;
+      document.getElementById("summaryMonth").textContent = monthName;
 
       const firstDay = new Date(year, month, 1);
       const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -379,7 +813,7 @@
       for (let day = 1; day <= daysInMonth; day++) {
         const date = new Date(year, month, day);
         const dateKey = toDateKey(date);
-        const record = data[dateKey];
+        const record = state.records[dateKey];
 
         const button = document.createElement("button");
         button.className = "day";
@@ -389,14 +823,13 @@
         if (dateKey === selectedDate) button.classList.add("selected");
 
         if (record) {
-          const complete = record.study && record.gym && record.piano;
+          const studyDone = recordHasStudy(record);
+          const complete = studyDone && record.gym && record.piano;
+
           if (complete) button.classList.add("complete");
 
-          const hasAny =
-            record.study ||
-            record.gym ||
-            record.piano ||
-            Number(record.pianoMinutes) > 0;
+          const hasAny = studyDone || record.gym || record.piano ||
+            Number(record.pianoMinutes) > 0 || record.note;
 
           if (hasAny && !complete) {
             const dot = document.createElement("span");
@@ -419,29 +852,135 @@
       const year = shownMonth.getFullYear();
       const month = shownMonth.getMonth();
 
-      let studyCount = 0;
-      let gymCount = 0;
-      let pianoCount = 0;
-      let totalPianoMinutes = 0;
+      let studyDays = 0;
+      let studyMinutes = 0;
+      let gymDays = 0;
+      let pianoDays = 0;
+      let pianoMinutes = 0;
+      const bySubject = {};
 
-      Object.entries(data).forEach(([dateKey, record]) => {
-        const date = new Date(dateKey + "T12:00:00");
-
-        if (date.getFullYear() === year && date.getMonth() === month) {
-          if (record.study) studyCount++;
-          if (record.gym) gymCount++;
-          if (record.piano) pianoCount++;
-          totalPianoMinutes += Number(record.pianoMinutes) || 0;
-        }
+      state.subjects.forEach(subject => {
+        bySubject[subject.id] = { name: subject.name, days: 0, minutes: 0 };
       });
 
-      document.getElementById("studyCount").textContent = studyCount;
-      document.getElementById("gymCount").textContent = gymCount;
-      document.getElementById("pianoCount").textContent = pianoCount;
+      Object.entries(state.records).forEach(([dateKey, record]) => {
+        const date = new Date(dateKey + "T12:00:00");
+        if (date.getFullYear() !== year || date.getMonth() !== month) return;
 
-      const hours = totalPianoMinutes / 60;
-      document.getElementById("pianoHours").textContent =
-        hours < 10 ? `${hours.toFixed(1)} h` : `${hours.toFixed(0)} h`;
+        if (recordHasStudy(record)) studyDays++;
+        if (record.gym) gymDays++;
+        if (record.piano) pianoDays++;
+        pianoMinutes += Number(record.pianoMinutes) || 0;
+
+        Object.entries(record.subjects || {}).forEach(([subjectId, item]) => {
+          if (!bySubject[subjectId]) {
+            bySubject[subjectId] = { name: "Archived subject", days: 0, minutes: 0 };
+          }
+          if (item.done || Number(item.minutes) > 0) bySubject[subjectId].days++;
+          bySubject[subjectId].minutes += Number(item.minutes) || 0;
+          studyMinutes += Number(item.minutes) || 0;
+        });
+      });
+
+      document.getElementById("studyDays").textContent = studyDays;
+      document.getElementById("studyHours").textContent = (studyMinutes / 60).toFixed(1);
+      document.getElementById("gymCount").textContent = gymDays;
+      document.getElementById("pianoCount").textContent = pianoDays;
+      document.getElementById("pianoHours").textContent = (pianoMinutes / 60).toFixed(1);
+
+      const breakdown = document.getElementById("subjectBreakdown");
+      breakdown.innerHTML = "";
+
+      const rows = Object.values(bySubject)
+        .filter(item => item.days > 0 || item.minutes > 0)
+        .sort((a, b) => b.minutes - a.minutes || b.days - a.days);
+
+      if (rows.length === 0) {
+        breakdown.innerHTML = '<div class="empty-state">No study activity recorded this month.</div>';
+      } else {
+        rows.forEach(item => {
+          const row = document.createElement("div");
+          row.className = "breakdown-row";
+          row.innerHTML = `
+            <div class="breakdown-name">${escapeHtml(item.name)}</div>
+            <div class="breakdown-meta">${item.days} day${item.days === 1 ? "" : "s"}</div>
+            <div class="breakdown-meta">${(item.minutes / 60).toFixed(1)} h</div>
+          `;
+          breakdown.appendChild(row);
+        });
+      }
+    }
+
+    function renderSubjectManager() {
+      const activeContainer = document.getElementById("activeSubjectManagerList");
+      const archivedContainer = document.getElementById("archivedSubjectManagerList");
+      activeContainer.innerHTML = "";
+      archivedContainer.innerHTML = "";
+
+      const active = state.subjects.filter(s => !s.archived);
+      const archived = state.subjects.filter(s => s.archived);
+
+      if (active.length === 0) {
+        activeContainer.innerHTML = '<div class="empty-state">No active subjects.</div>';
+      }
+
+      active.forEach(subject => {
+        activeContainer.appendChild(createManageRow(subject, "Archive", true));
+      });
+
+      if (archived.length === 0) {
+        archivedContainer.innerHTML = '<div class="empty-state">No archived subjects.</div>';
+      }
+
+      archived.forEach(subject => {
+        archivedContainer.appendChild(createManageRow(subject, "Restore", false));
+      });
+    }
+
+    function createManageRow(subject, label, archiveValue) {
+      const row = document.createElement("div");
+      row.className = "subject-manage-row";
+      row.innerHTML = `
+        <span class="subject-name">${escapeHtml(subject.name)}</span>
+        <button class="archive-button">${label}</button>
+      `;
+
+      row.querySelector("button").addEventListener("click", () => {
+        subject.archived = archiveValue;
+        saveState();
+        renderSubjectManager();
+        loadSelectedDay();
+        updateStats();
+      });
+
+      return row;
+    }
+
+    function addSubject() {
+      const input = document.getElementById("newSubjectName");
+      const name = input.value.trim();
+      if (!name) return;
+
+      const duplicate = state.subjects.some(
+        subject => subject.name.toLowerCase() === name.toLowerCase() && !subject.archived
+      );
+      if (duplicate) {
+        alert("That subject already exists.");
+        return;
+      }
+
+      state.subjects.push({
+        id: createId(name),
+        name,
+        archived: false,
+        createdAt: new Date().toISOString()
+      });
+
+      input.value = "";
+      saveState();
+      renderSubjectManager();
+      loadSelectedDay();
+      updateStats();
     }
 
     function changeMonth(offset) {
@@ -450,34 +989,113 @@
         shownMonth.getMonth() + offset,
         1
       );
-
-      selectedDate = toDateKey(new Date(
-        shownMonth.getFullYear(),
-        shownMonth.getMonth(),
-        1
-      ));
-
+      selectedDate = toDateKey(new Date(shownMonth.getFullYear(), shownMonth.getMonth(), 1));
       loadSelectedDay();
       renderCalendar();
       updateStats();
     }
 
-    studyEl.addEventListener("change", saveSelectedDay);
-    gymEl.addEventListener("change", saveSelectedDay);
-    pianoEl.addEventListener("change", saveSelectedDay);
-
-    pianoMinutesEl.addEventListener("change", saveSelectedDay);
-    pianoMinutesEl.addEventListener("blur", saveSelectedDay);
-
-    document.getElementById("prevMonth").addEventListener("click", () => changeMonth(-1));
-    document.getElementById("nextMonth").addEventListener("click", () => changeMonth(1));
-
-    document.getElementById("resetDay").addEventListener("click", () => {
-      delete data[selectedDate];
-      saveAll();
+    function goToToday() {
+      const today = new Date();
+      selectedDate = toDateKey(today);
+      shownMonth = new Date(today.getFullYear(), today.getMonth(), 1);
       loadSelectedDay();
       renderCalendar();
       updateStats();
+    }
+
+    function exportBackup() {
+      const payload = {
+        app: "Daily Practice",
+        version: 4,
+        exportedAt: new Date().toISOString(),
+        data: state
+      };
+
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {
+        type: "application/json"
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `daily-practice-backup-${toDateKey(new Date())}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importBackup(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(reader.result);
+          const imported = parsed.data || parsed;
+
+          if (!imported.subjects || !imported.records) {
+            throw new Error("Invalid backup");
+          }
+
+          if (!confirm("Replace the current data with this backup?")) return;
+
+          state = imported;
+          saveState();
+          renderSubjectManager();
+          loadSelectedDay();
+          renderCalendar();
+          updateStats();
+          alert("Backup imported.");
+        } catch {
+          alert("This file is not a valid Daily Practice backup.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    gymEl.addEventListener("change", saveSelectedDay);
+    pianoEl.addEventListener("change", saveSelectedDay);
+    pianoMinutesEl.addEventListener("change", saveSelectedDay);
+    pianoMinutesEl.addEventListener("blur", saveSelectedDay);
+    noteEl.addEventListener("change", saveSelectedDay);
+    noteEl.addEventListener("blur", saveSelectedDay);
+
+    document.getElementById("prevMonth").addEventListener("click", () => changeMonth(-1));
+    document.getElementById("nextMonth").addEventListener("click", () => changeMonth(1));
+    document.getElementById("todayButton").addEventListener("click", goToToday);
+
+    document.getElementById("manageSubjectsButton").addEventListener("click", () => {
+      const manager = document.getElementById("subjectManager");
+      manager.classList.toggle("open");
+      renderSubjectManager();
+    });
+
+    document.getElementById("addSubjectButton").addEventListener("click", addSubject);
+    document.getElementById("newSubjectName").addEventListener("keydown", event => {
+      if (event.key === "Enter") addSubject();
+    });
+
+    document.getElementById("resetDay").addEventListener("click", () => {
+      if (!confirm("Clear all records for this day?")) return;
+      delete state.records[selectedDate];
+      saveState();
+      loadSelectedDay();
+      renderCalendar();
+      updateStats();
+    });
+
+    document.getElementById("exportButton").addEventListener("click", exportBackup);
+    document.getElementById("importFile").addEventListener("change", event => {
+      const file = event.target.files?.[0];
+      if (file) importBackup(file);
+      event.target.value = "";
     });
 
     if ("serviceWorker" in navigator) {
@@ -486,6 +1104,7 @@
       });
     }
 
+    renderSubjectManager();
     loadSelectedDay();
     renderCalendar();
     updateStats();
