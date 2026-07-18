@@ -26,10 +26,12 @@
       --accent:#377f59;
       --accent-deep:#2f6d4d;
       --accent-soft:#e5efe8;
-      --study:#4b7b63;
-      --gym:#8a6b54;
-      --piano:#6a7868;
+      --study:#2f8f68;
+      --gym:#c47a3a;
+      --piano:#6b78c9;
       --danger:#8f5a53;
+      --highlight-dot:#f2b632;
+      --highlight-dot-soft:rgba(242,182,50,.30);
       --shadow:0 18px 34px rgba(48,56,49,.06);
     }
 
@@ -101,12 +103,10 @@
       box-shadow:6px 6px 0 rgba(55,127,89,.12);
       transform:scale(1.02);
     }
-    .day.complete{background:#dbe8df;color:var(--accent-deep);font-weight:800}
-    .dot{position:absolute;left:50%;bottom:9px;width:5px;height:5px;border-radius:50%;transform:translateX(-50%);background:currentColor;opacity:.72}
+    .day.complete{background:#fff3c9;color:#8a6712;font-weight:800;box-shadow:inset 0 0 0 1px rgba(242,182,50,.28)}
+    .dot{position:absolute;left:50%;bottom:5px;width:7px;height:7px;border-radius:50%;transform:translateX(-50%);background:var(--highlight-dot);box-shadow:0 0 0 3px var(--highlight-dot-soft);opacity:1}
 
     .tracking-panel{padding-top:20px}
-    .tracking-heading{margin-bottom:16px}
-    .tracking-kicker{margin:0 0 10px;color:var(--muted);font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
     .activity-stack{display:flex;flex-direction:column;gap:14px}
     .track-card{
       border:1px solid var(--line);border-radius:26px;background:linear-gradient(180deg,#fff,#f8f6f1);
@@ -185,7 +185,7 @@
     .bar-label{margin-top:12px;padding-bottom:18px}
     .chart-legend{display:flex;justify-content:center;flex-wrap:wrap;column-gap:24px;row-gap:10px;margin-top:24px;padding-top:18px;border-top:1px solid var(--line)}
     .legend-item{display:flex;align-items:center;gap:6px}
-    .legend-swatch{width:10px;height:10px;border-radius:3px}
+    .legend-swatch{width:12px;height:12px;border-radius:4px}
     .legend-swatch.study{background:var(--study)}
     .legend-swatch.gym{background:var(--gym)}
     .legend-swatch.piano{background:var(--piano)}
@@ -207,6 +207,8 @@
       .track-entry,.track-card-header,.subject-stack{padding-left:16px;padding-right:16px}
       .track-check{width:28px;height:28px}
       .track-check:checked::after{left:8px;top:4px}
+      .day{font-size:14px}
+      .dot{bottom:4px;width:6px;height:6px}
     }
   </style>
 </head>
@@ -214,7 +216,6 @@
   <main class="app">
     <header class="topbar">
       <div>
-        <p class="eyebrow" id="heroDate">Daily Practice</p>
         <h1>Everyday</h1>
       </div>
       <button class="pill-button" id="todayButton">Today</button>
@@ -237,12 +238,6 @@
     </section>
 
     <section class="panel tracking-panel">
-      <div class="tracking-heading">
-        <div class="subsection-label tracking-kicker">Anytime</div>
-        <h2 class="section-title" id="selectedDateLabel"></h2>
-        <p class="section-subtitle">Record time and completion for this date.</p>
-      </div>
-
       <div class="activity-stack">
         <div class="track-card study-card">
           <div class="track-card-header">
@@ -557,9 +552,6 @@
       pianoMinutesEl.value = record.pianoMinutes || "";
 
       const date = new Date(selectedDate + "T12:00:00");
-      document.getElementById("selectedDateLabel").textContent =
-        date.toLocaleDateString("en-NZ",{ weekday:"long", day:"numeric", month:"long" });
-
       renderDailySubjects();
     }
 
@@ -773,8 +765,7 @@
       row.querySelector("button").addEventListener("click", () => {
         subject.archived = archiveValue;
         saveState();
-        document.getElementById("heroDate").textContent = new Date().toLocaleDateString("en-NZ", { weekday:"short", day:"numeric", month:"long" }).toUpperCase();
-
+  
     renderSubjectManager();
         loadSelectedDay();
         updateStats();
