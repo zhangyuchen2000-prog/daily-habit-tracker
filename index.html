@@ -11,7 +11,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=8" />
   <link rel="shortcut icon" type="image/png" href="./icon-192.png?v=8" />
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=8" />
-  <link rel="manifest" href="./manifest.json?v=8" />
+  <link rel="manifest" href="./manifest.json?v=9" />
   <style>
     :root{
       --bg:#efece5;
@@ -99,9 +99,9 @@
     .day.empty{cursor:default}
     .day.today{box-shadow:inset 0 0 0 1.5px rgba(55,127,89,.35)}
     .day.selected{
-      background:var(--accent);color:#fff;font-weight:800;
-      box-shadow:6px 6px 0 rgba(55,127,89,.12);
-      transform:scale(1.02);
+      background:var(--accent);color:#fff;font-weight:800;border-radius:50%;
+      box-shadow:6px 7px 0 rgba(55,127,89,.12);
+      transform:translateY(-1px) scale(1.03);
     }
     .day.complete{background:#fff3c9;color:#8a6712;font-weight:800;box-shadow:inset 0 0 0 1px rgba(242,182,50,.28)}
     .dot{position:absolute;left:50%;bottom:5px;width:7px;height:7px;border-radius:50%;transform:translateX(-50%);background:var(--highlight-dot);box-shadow:0 0 0 3px var(--highlight-dot-soft);opacity:1}
@@ -123,28 +123,42 @@
     .study-icon{background:#e7efe9}
     .gym-icon{background:#efe7e1}
     .piano-icon{background:#e9eee8}
-    .subject-icon{width:34px;height:34px;font-size:16px;background:#f0f2ec}
-    .track-title{font-size:16px;font-weight:700;letter-spacing:-.02em}
-    .subject-track-title{font-size:15px}
-    .track-subline{display:flex;align-items:center;gap:6px;margin-top:3px;color:var(--muted);font-size:13px}
+    .subject-icon{width:34px;height:34px;font-size:14px;background:#f0f2ec}
+    .track-title{font-size:17px;font-weight:700;letter-spacing:-.02em;font-family:Georgia,"Times New Roman",serif}
+    .subject-track-title{font-size:16px;font-family:Georgia,"Times New Roman",serif}
+    .track-subline{display:flex;align-items:center;gap:6px;margin-top:3px;color:var(--muted);font-size:14px;font-family:Georgia,"Times New Roman",serif}
     .track-meta-icon{display:inline-block;font-size:11px;opacity:.7;transform:translateY(-.5px)}
+.track-badge{font-family:Georgia,"Times New Roman",serif;font-size:17px;font-weight:700;line-height:1;color:var(--accent-deep);letter-spacing:-.04em}
+    .study-icon .track-badge{color:#3a6f58}
+    .gym-icon .track-badge{color:#8a6b54}
+    .piano-icon .track-badge{color:#6a7868}
+    .subject-icon .track-badge{font-size:15px;color:#5f7162}
+    .doodle-icon{width:24px;height:24px;display:block;overflow:visible}
+    .doodle-icon *{vector-effect:non-scaling-stroke}
+    .doodle-stroke{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+    .doodle-fill{fill:currentColor;opacity:.14;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+    .study-icon{color:#3f765f}
+    .gym-icon{color:#9a6d48}
+    .piano-icon{color:#667760}
+    .subject-icon{color:#627266}
     .track-check{-webkit-appearance:none;appearance:none;width:32px;height:32px;border-radius:50%;border:1.5px solid #cfc8ba;background:#f6f3ed;position:relative;flex:0 0 auto}
     .track-check:hover{border-color:#bdb7aa}
     .track-check:checked{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px rgba(55,127,89,.12)}
     .track-check:checked::after{content:"";position:absolute;left:10px;top:6px;width:8px;height:14px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
-    .track-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
-    .track-mini-label,.subsection-label{color:var(--muted);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+    .track-footer{display:none}
+    .track-mini-label,.subsection-label{color:var(--muted);font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-family:Georgia,"Times New Roman",serif}
     .minutes-wrap{display:flex;align-items:center;gap:8px}
     .minutes-wrap.compact{
-      display:inline-flex;align-items:center;gap:8px;padding:11px 14px;border-radius:999px;
-      background:var(--surface-soft);border:1px solid var(--line)
+      display:inline-flex;align-items:center;gap:5px;padding:6px 9px;border-radius:999px;
+      background:var(--surface-soft);border:1px solid var(--line);flex:0 0 auto
     }
     .minutes-wrap.compact input,.minutes-wrap input,.text-input{
       border:0;background:transparent;color:var(--text);outline:none;
     }
-    .minutes-wrap.compact input{width:62px;text-align:right;padding:0;box-shadow:none}
+    .minutes-wrap.compact input{width:36px;text-align:right;padding:0;box-shadow:none;font-family:Georgia,"Times New Roman",serif;font-size:13px}
     .minutes-wrap input{width:70px;text-align:right}
-    .unit{color:var(--muted);font-size:13px}
+    .unit{color:var(--muted);font-size:12px;font-family:Georgia,"Times New Roman",serif}
+    .inline-actions{display:flex;align-items:center;gap:8px;flex:0 0 auto}
     .subject-stack{padding:0 18px 8px}
     .subject-track-row{padding:14px 0;border-top:1px solid var(--line)}
     .subject-track-row:first-child{border-top:0}
@@ -159,6 +173,25 @@
     }
     .minutes-wrap.compact input:focus,.minutes-wrap input:focus,.text-input:focus{outline:none;box-shadow:none}
     .subject-manage-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+    .subject-manage-main{flex:1;min-width:0}
+    .subject-manage-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .manage-button{border:1px solid #d8d3c8;background:linear-gradient(180deg,#fff,#f6f4ef);color:var(--muted);border-radius:12px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;transition:.18s ease}
+    .manage-button:hover{transform:translateY(-1px);color:var(--text)}
+    .manage-button.delete{color:var(--danger);border-color:rgba(143,90,83,.28);background:#fffaf8}
+    .subject-manage-meta{margin-top:5px;color:var(--muted);font-size:12px;line-height:1.45}
+    .project-stats-list{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+    .project-stat-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:16px 18px}
+    .project-stat-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .project-stat-actions{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+    .project-delete-button{border:1px solid #ead8d3;background:#fff8f6;color:var(--danger);border-radius:999px;padding:6px 10px;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;transition:.18s ease}
+    .project-delete-button:hover{transform:translateY(-1px);background:#fff1ed}
+    .project-stat-name{font-weight:760;font-size:16px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .project-status{flex:0 0 auto;padding:5px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent-deep);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+    .project-status.archived{background:#f1ece5;color:#8b6a4d}
+    .project-stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .project-stat-item{padding:10px 12px;border-radius:15px;background:var(--surface-soft);border:1px solid var(--line)}
+    .project-stat-value{font-size:14px;font-weight:760;color:var(--text)}
+    .project-stat-label{margin-top:4px;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.08em}
     .archive-button{border-radius:12px;padding:8px 12px;color:var(--muted);font-size:12px;font-weight:700}
     .text-button{border:0;background:transparent;color:var(--muted);padding:8px 0;font-size:13px;font-weight:700;cursor:pointer}
     .text-button:hover{color:var(--accent)}
@@ -195,6 +228,44 @@
     .file-label input{display:none}
     .empty-state{color:var(--muted);font-size:14px;padding:14px 0}
 
+    .tabbar{
+      position:sticky;top:calc(env(safe-area-inset-top) + 10px);z-index:20;
+      display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+      margin:0 auto 20px;padding:7px;
+      background:rgba(249,248,245,.92);border:1px solid rgba(216,210,201,.95);
+      border-radius:20px;box-shadow:var(--shadow);backdrop-filter:blur(18px);
+    }
+    .tab-button{
+      border:0;background:transparent;color:var(--accent);border-radius:14px;
+      padding:11px 10px;font-size:16px;font-weight:700;cursor:pointer;transition:.18s ease;
+      font-family:Georgia,"Times New Roman",serif;letter-spacing:-.02em;
+    }
+    .tab-button.active{background:var(--accent);color:#fff;box-shadow:0 7px 16px rgba(55,127,89,.16)}
+    .tab-page{display:none}
+    .tab-page.active{display:block}
+    .home-tracker{max-width:620px;margin-left:auto;margin-right:auto}
+    .activity-stack.compact-stack{gap:11px}
+    .compact-stack .track-card{border-radius:21px}
+    .compact-stack .track-entry{padding:15px 16px}
+    .compact-stack .track-card-header{padding:14px 16px 6px}
+    .compact-stack .track-icon{width:38px;height:38px;font-size:16px}
+    .compact-stack .track-footer{margin-top:7px;padding-top:7px}
+    .compact-stack .subject-stack{padding:0 16px 6px}
+    .compact-stack .subject-track-row{padding:11px 0}
+    .analytics-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(240px,.65fr);gap:18px;align-items:start}
+    .proportion-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:20px}
+    .proportion-chart{width:180px;aspect-ratio:1;border-radius:50%;margin:20px auto 18px;background:conic-gradient(#e8e3da 0 100%);position:relative}
+    .proportion-chart::after{content:"";position:absolute;inset:28%;border-radius:50%;background:#fff;box-shadow:0 0 0 1px var(--line)}
+    .proportion-total{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:1;flex-direction:column;font-weight:800;color:var(--text);pointer-events:none}
+    .proportion-total strong{font-size:26px;line-height:1}
+    .proportion-total span{font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.08em}
+    .proportion-legend{display:flex;flex-direction:column;gap:10px}
+    .proportion-row{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:center;font-size:13px}
+    .proportion-row strong{font-variant-numeric:tabular-nums}
+    .settings-stack{display:flex;flex-direction:column;gap:16px}
+    .settings-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:20px}
+    .settings-card .section-subtitle{margin-bottom:14px}
+
     @media(max-width:650px){
       body{padding-left:12px;padding-right:12px}
       .topbar{align-items:end;padding:20px;border-radius:26px}
@@ -206,9 +277,18 @@
       .chart{gap:8px;height:215px}
       .track-entry,.track-card-header,.subject-stack{padding-left:16px;padding-right:16px}
       .track-check{width:28px;height:28px}
+      .inline-actions{gap:6px}
+      .minutes-wrap.compact{padding:5px 8px}
+      .minutes-wrap.compact input{width:32px;font-size:12px}
       .track-check:checked::after{left:8px;top:4px}
       .day{font-size:14px}
       .dot{bottom:4px;width:6px;height:6px}
+      .project-stat-grid{grid-template-columns:repeat(2,1fr)}
+      .tabbar{top:calc(env(safe-area-inset-top) + 6px);margin-bottom:14px}
+      .tab-button{padding:10px 6px;font-size:14px}
+      .analytics-grid{grid-template-columns:1fr}
+      .home-tracker{max-width:none}
+      .proportion-chart{width:164px}
     }
   </style>
 </head>
@@ -221,147 +301,119 @@
       <button class="pill-button" id="todayButton">Today</button>
     </header>
 
-    <section class="panel">
-      <div class="calendar-header">
-        <div class="month-title" id="monthTitle"></div>
-        <div class="month-controls">
-          <button class="icon-button" id="prevMonth" aria-label="Previous month">‹</button>
-          <button class="icon-button" id="nextMonth" aria-label="Next month">›</button>
-        </div>
-      </div>
+    <nav class="tabbar" aria-label="App sections">
+      <button class="tab-button active" data-tab="home">Home</button>
+      <button class="tab-button" data-tab="insights">Insights</button>
+      <button class="tab-button" data-tab="settings">Settings</button>
+    </nav>
 
-      <div class="weekdays">
-        <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div>
-        <div>Fri</div><div>Sat</div><div>Sun</div>
-      </div>
-      <div class="calendar-grid" id="calendarGrid"></div>
-    </section>
-
-    <section class="panel tracking-panel">
-      <div class="activity-stack">
-        <div class="track-card study-card">
-          <div class="track-card-header">
-            <div class="track-left">
-              <div class="track-icon study-icon">📚</div>
-              <div>
-                <div class="track-title">Study</div>
-                <div class="track-subline">Track by subject</div>
-              </div>
-            </div>
+    <div class="tab-page active" id="tab-home">
+      <section class="panel">
+        <div class="calendar-header">
+          <div class="month-title" id="monthTitle"></div>
+          <div class="month-controls">
+            <button class="icon-button" id="prevMonth" aria-label="Previous month">‹</button>
+            <button class="icon-button" id="nextMonth" aria-label="Next month">›</button>
           </div>
-          <div class="subject-stack" id="dailySubjectList"></div>
         </div>
+        <div class="weekdays">
+          <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div>
+          <div>Fri</div><div>Sat</div><div>Sun</div>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+      </section>
 
-        <div class="track-card">
-          <div class="track-entry">
-            <div class="track-main">
+      <section class="panel tracking-panel home-tracker">
+        <div class="activity-stack compact-stack">
+          <div class="track-card study-card">
+            <div class="track-card-header">
               <div class="track-left">
-                <div class="track-icon gym-icon">🏋️</div>
-                <div>
-                  <div class="track-title">Gym</div>
-                  <div class="track-subline"><span class="track-meta-icon">◷</span>Through the day</div>
-                </div>
+                <div class="track-icon study-icon"><svg class="doodle-icon" viewBox="0 0 32 32" aria-hidden="true">
+  <path class="doodle-fill" d="M5.5 8.5c3.2-.8 6.1-.4 9 1.6v14.4c-2.9-2-5.8-2.4-9-1.6z"/>
+  <path class="doodle-fill" d="M26.5 8.5c-3.2-.8-6.1-.4-9 1.6v14.4c2.9-2 5.8-2.4 9-1.6z"/>
+  <path class="doodle-stroke" d="M16 10v15M8.5 13.5c1.8-.2 3.2.2 4.6 1.1M19 14.6c1.5-.9 3-1.3 4.7-1.1"/>
+  <path class="doodle-stroke" d="M7 6.5l2-2 2 2"/>
+</svg></div>
+                <div><div class="track-title">Study</div><div class="track-subline">Track by subject</div></div>
               </div>
-              <input class="track-check" type="checkbox" id="gym" />
             </div>
-            <div class="track-footer">
-              <span class="track-mini-label">Minutes</span>
-              <span class="minutes-wrap compact">
-                <input id="gymMinutes" type="number" min="0" step="5" inputmode="numeric" placeholder="0" />
-                <span class="unit">min</span>
-              </span>
-            </div>
+            <div class="subject-stack" id="dailySubjectList"></div>
           </div>
-        </div>
 
-        <div class="track-card">
-          <div class="track-entry">
-            <div class="track-main">
-              <div class="track-left">
-                <div class="track-icon piano-icon">☕</div>
-                <div>
-                  <div class="track-title">Piano</div>
-                  <div class="track-subline"><span class="track-meta-icon">◷</span>Through the day</div>
-                </div>
-              </div>
-              <input class="track-check" type="checkbox" id="piano" />
-            </div>
-            <div class="track-footer">
-              <span class="track-mini-label">Minutes</span>
-              <span class="minutes-wrap compact">
-                <input id="pianoMinutes" type="number" min="0" step="5" inputmode="numeric" placeholder="0" />
-                <span class="unit">min</span>
-              </span>
-            </div>
+          <div class="track-card"><div class="track-entry">
+            <div class="track-main"><div class="track-left"><div class="track-icon gym-icon"><svg class="doodle-icon" viewBox="0 0 32 32" aria-hidden="true">
+  <path class="doodle-stroke" d="M7 13v6M10 11v10M22 11v10M25 13v6M10 16h12"/>
+  <path class="doodle-fill" d="M5.5 12.5h3v7h-3zM23.5 12.5h3v7h-3z"/>
+  <path class="doodle-stroke" d="M14 10.5c.7-1.8 2.9-2.7 4.6-1.7 1.1.7 1.5 2 .9 3.1-.8 1.6-3.2 1.9-4.4.6-.5-.5-.8-1.2-.7-2"/>
+  <path class="doodle-stroke" d="M15.2 23.5c.7.8 1.8 1.2 2.8.9"/>
+</svg></div><div><div class="track-title">Gym</div></div></div><div class="inline-actions"><span class="minutes-wrap compact"><input id="gymMinutes" type="number" min="0" step="5" inputmode="numeric" placeholder="0" /><span class="unit">min</span></span><input class="track-check" type="checkbox" id="gym" /></div></div>
+          </div></div>
+
+          <div class="track-card"><div class="track-entry">
+            <div class="track-main"><div class="track-left"><div class="track-icon piano-icon"><svg class="doodle-icon" viewBox="0 0 32 32" aria-hidden="true">
+  <path class="doodle-fill" d="M6 9.5h20v13H6z"/>
+  <path class="doodle-stroke" d="M6 15.5h20M10 15.5v7M14 15.5v7M18 15.5v7M22 15.5v7"/>
+  <path class="doodle-stroke" d="M12 9.5v5M16 9.5v5M20 9.5v5"/>
+  <path class="doodle-stroke" d="M8 25c3.1 1 5.8.9 8-.4 2.4 1.3 5.1 1.4 8 .4"/>
+</svg></div><div><div class="track-title">Piano</div></div></div><div class="inline-actions"><span class="minutes-wrap compact"><input id="pianoMinutes" type="number" min="0" step="5" inputmode="numeric" placeholder="0" /><span class="unit">min</span></span><input class="track-check" type="checkbox" id="piano" /></div></div>
+          </div></div>
+        </div>
+        <div class="panel-footer tracking-footer"><button class="text-button" id="manageSubjectsButton">Manage subjects</button><button class="text-button danger" id="resetDay">Clear this day</button></div>
+      </section>
+    </div>
+
+    <div class="tab-page" id="tab-insights">
+      <div class="analytics-grid">
+        <section class="panel">
+          <h2 class="section-title">Last 7 Days</h2>
+          <p class="section-subtitle">Recorded time by activity.</p>
+          <div class="chart-wrap"><div class="chart" id="weeklyChart"></div><div class="chart-legend"><span class="legend-item"><span class="legend-swatch study"></span>Study</span><span class="legend-item"><span class="legend-swatch gym"></span>Gym</span><span class="legend-item"><span class="legend-swatch piano"></span>Piano</span></div></div>
+        </section>
+
+        <section class="proportion-card">
+          <h2 class="section-title">Proportion</h2>
+          <p class="section-subtitle">This month by recorded minutes.</p>
+          <div class="proportion-chart" id="proportionChart"><div class="proportion-total"><strong id="proportionTotal">0.0</strong><span>hours</span></div></div>
+          <div class="proportion-legend">
+            <div class="proportion-row"><span class="legend-swatch study"></span><span>Study</span><strong id="studyShare">0%</strong></div>
+            <div class="proportion-row"><span class="legend-swatch gym"></span><span>Gym</span><strong id="gymShare">0%</strong></div>
+            <div class="proportion-row"><span class="legend-swatch piano"></span><span>Piano</span><strong id="pianoShare">0%</strong></div>
           </div>
+        </section>
+      </div>
+
+      <section class="panel">
+        <h2 class="section-title">Projects</h2>
+        <p class="section-subtitle">Lifetime totals for every study subject. Average uses recorded days only.</p>
+        <div class="project-stats-list" id="projectStatsList"></div>
+      </section>
+
+      <section class="panel">
+        <h2 class="section-title">Monthly Summary</h2>
+        <p class="section-subtitle" id="summaryMonth"></p>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-value" id="studyDays">0</div><div class="stat-label">Study days</div></div><div class="stat-card"><div class="stat-value" id="studyHours">0.0</div><div class="stat-label">Study hours</div></div><div class="stat-card"><div class="stat-value" id="gymCount">0</div><div class="stat-label">Gym days</div></div><div class="stat-card"><div class="stat-value" id="gymHours">0.0</div><div class="stat-label">Gym hours</div></div><div class="stat-card"><div class="stat-value" id="pianoCount">0</div><div class="stat-label">Piano days</div></div><div class="stat-card"><div class="stat-value" id="pianoHours">0.0</div><div class="stat-label">Piano hours</div></div>
         </div>
+        <div class="subject-breakdown"><div class="subsection-label" style="margin-top:0;">Study by subject</div><div id="subjectBreakdown"></div></div>
+      </section>
+    </div>
+
+    <div class="tab-page" id="tab-settings">
+      <div class="settings-stack">
+        <section class="settings-card">
+          <h2 class="section-title">Subjects</h2>
+          <p class="section-subtitle">Add current courses or archive completed ones.</p>
+          <div class="add-row"><input class="text-input" id="newSubjectName" type="text" maxlength="60" placeholder="e.g. COMPSCI 230" /><button class="primary-button" id="addSubjectButton">Add</button></div>
+          <div class="subsection-label">Active</div><div id="activeSubjectManagerList"></div>
+          <div class="subsection-label">Archived</div><div id="archivedSubjectManagerList"></div>
+        </section>
+        <section class="settings-card">
+          <h2 class="section-title">Backup</h2>
+          <p class="section-subtitle">Keep a copy before changing phones or clearing browser data.</p>
+          <div class="backup-actions"><button class="secondary-button" id="exportButton">Export backup</button><label class="secondary-button file-label">Import backup<input id="importFile" type="file" accept="application/json" /></label></div>
+        </section>
       </div>
-
-      <div class="panel-footer tracking-footer">
-        <button class="text-button" id="manageSubjectsButton">Manage subjects</button>
-        <button class="text-button danger" id="resetDay">Clear this day</button>
-      </div>
-
-      <div class="manager" id="subjectManager">
-        <h3 class="section-title" style="font-size:18px;">Subjects</h3>
-        <p class="section-subtitle">Add current courses or archive completed ones.</p>
-
-        <div class="add-row">
-          <input class="text-input" id="newSubjectName" type="text" maxlength="60" placeholder="e.g. COMPSCI 230" />
-          <button class="primary-button" id="addSubjectButton">Add</button>
-        </div>
-
-        <div class="subsection-label">Active</div>
-        <div id="activeSubjectManagerList"></div>
-
-        <div class="subsection-label">Archived</div>
-        <div id="archivedSubjectManagerList"></div>
-      </div>
-    </section>
-
-    <section class="panel">
-      <h2 class="section-title">Last 7 Days</h2>
-      <p class="section-subtitle">Total recorded hours per day, split by activity.</p>
-      <div class="chart-wrap">
-        <div class="chart" id="weeklyChart"></div>
-        <div class="chart-legend">
-          <span class="legend-item"><span class="legend-swatch study"></span>Study</span>
-          <span class="legend-item"><span class="legend-swatch gym"></span>Gym</span>
-          <span class="legend-item"><span class="legend-swatch piano"></span>Piano</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel">
-      <h2 class="section-title">Monthly Summary</h2>
-      <p class="section-subtitle" id="summaryMonth"></p>
-
-      <div class="stats-grid">
-        <div class="stat-card"><div class="stat-value" id="studyDays">0</div><div class="stat-label">Study days</div></div>
-        <div class="stat-card"><div class="stat-value" id="studyHours">0.0</div><div class="stat-label">Study hours</div></div>
-        <div class="stat-card"><div class="stat-value" id="gymCount">0</div><div class="stat-label">Gym days</div></div>
-        <div class="stat-card"><div class="stat-value" id="gymHours">0.0</div><div class="stat-label">Gym hours</div></div>
-        <div class="stat-card"><div class="stat-value" id="pianoCount">0</div><div class="stat-label">Piano days</div></div>
-        <div class="stat-card"><div class="stat-value" id="pianoHours">0.0</div><div class="stat-label">Piano hours</div></div>
-      </div>
-
-      <div class="subject-breakdown">
-        <div class="subsection-label" style="margin-top:0;">Study by subject</div>
-        <div id="subjectBreakdown"></div>
-      </div>
-    </section>
-
-    <section class="panel">
-      <h2 class="section-title">Backup</h2>
-      <p class="section-subtitle">Keep a copy before changing phones or clearing browser data.</p>
-      <div class="backup-actions">
-        <button class="secondary-button" id="exportButton">Export backup</button>
-        <label class="secondary-button file-label">
-          Import backup
-          <input id="importFile" type="file" accept="application/json" />
-        </label>
-      </div>
-    </section>
+    </div>
   </main>
 
   <script>
@@ -483,21 +535,24 @@
         row.innerHTML = `
           <div class="track-main">
             <div class="track-left">
-              <div class="track-icon subject-icon">📖</div>
+              <div class="track-icon subject-icon"><svg class="doodle-icon" viewBox="0 0 32 32" aria-hidden="true">
+  <path class="doodle-fill" d="M7 7.5h18v17H7z"/>
+  <path class="doodle-stroke" d="M11 11h10M11 15h7M11 19h9"/>
+  <path class="doodle-stroke" d="M9 5.5v4M23 5.5v4"/>
+  <path class="doodle-stroke" d="M6 25.5c4.5 1 15.5 1 20 0"/>
+</svg></div>
               <div>
                 <div class="track-title subject-track-title">${escapeHtml(subject.name)}</div>
-                <div class="track-subline"><span class="track-meta-icon">◷</span>Through the day</div>
               </div>
             </div>
-            <input class="track-check" type="checkbox" data-subject-check="${subject.id}" ${item.done ? "checked" : ""}>
-          </div>
-          <div class="track-footer">
-            <span class="track-mini-label">Minutes</span>
-            <span class="minutes-wrap compact">
-              <input type="number" min="0" step="5" inputmode="numeric" placeholder="0"
-                value="${item.minutes || ""}" data-subject-minutes="${subject.id}">
-              <span class="unit">min</span>
-            </span>
+            <div class="inline-actions">
+              <span class="minutes-wrap compact">
+                <input type="number" min="0" step="5" inputmode="numeric" placeholder="0"
+                  value="${item.minutes || ""}" data-subject-minutes="${subject.id}">
+                <span class="unit">min</span>
+              </span>
+              <input class="track-check" type="checkbox" data-subject-check="${subject.id}" ${item.done ? "checked" : ""}>
+            </div>
           </div>`;
         container.appendChild(row);
       });
@@ -684,6 +739,104 @@
       });
     }
 
+    function formatProjectDate(dateKey) {
+      if (!dateKey) return "—";
+      const date = new Date(dateKey + "T12:00:00");
+      return date.toLocaleDateString("en-NZ", { day:"numeric", month:"short", year:"numeric" });
+    }
+
+    function getSubjectLifetimeStats(subject) {
+      let firstDate = null;
+      let lastDate = null;
+      let days = 0;
+      let minutes = 0;
+
+      Object.entries(state.records).forEach(([dateKey, record]) => {
+        const item = record.subjects?.[subject.id];
+        if (!item) return;
+        const itemMinutes = Number(item.minutes) || 0;
+        const recorded = Boolean(item.done) || itemMinutes > 0;
+        if (!recorded) return;
+        days += 1;
+        minutes += itemMinutes;
+        if (!firstDate || dateKey < firstDate) firstDate = dateKey;
+        if (!lastDate || dateKey > lastDate) lastDate = dateKey;
+      });
+
+      const createdDate = subject.createdAt ? toDateKey(new Date(subject.createdAt)) : null;
+      const archivedDate = subject.archivedAt ? toDateKey(new Date(subject.archivedAt)) : null;
+      const startDate = firstDate || createdDate;
+      const endDate = subject.archived ? (archivedDate || lastDate || startDate) : null;
+
+      return {
+        startDate,
+        endDate,
+        lastDate,
+        days,
+        minutes,
+        hours: minutes / 60,
+        averageHours: days ? (minutes / 60) / days : 0
+      };
+    }
+
+    function renderProjectStats() {
+      const container = document.getElementById("projectStatsList");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const subjects = [...state.subjects].sort((a,b) => {
+        const aStats = getSubjectLifetimeStats(a);
+        const bStats = getSubjectLifetimeStats(b);
+        return bStats.minutes - aStats.minutes || a.name.localeCompare(b.name);
+      });
+
+      if (!subjects.length) {
+        container.innerHTML = '<div class="empty-state">No subjects yet.</div>';
+        return;
+      }
+
+      subjects.forEach(subject => {
+        const stats = getSubjectLifetimeStats(subject);
+        const card = document.createElement("div");
+        card.className = "project-stat-card";
+        card.innerHTML = `
+          <div class="project-stat-head">
+            <div class="project-stat-name">${escapeHtml(subject.name)}</div>
+            <div class="project-stat-actions">
+              <span class="project-status ${subject.archived ? "archived" : ""}">${subject.archived ? "Archived" : "Active"}</span>
+              <button class="project-delete-button" type="button">Delete</button>
+            </div>
+          </div>
+          <div class="project-stat-grid">
+            <div class="project-stat-item"><div class="project-stat-value">${formatProjectDate(stats.startDate)}</div><div class="project-stat-label">Started</div></div>
+            <div class="project-stat-item"><div class="project-stat-value">${subject.archived ? formatProjectDate(stats.endDate) : "Ongoing"}</div><div class="project-stat-label">Ended</div></div>
+            <div class="project-stat-item"><div class="project-stat-value">${stats.hours.toFixed(1)} h</div><div class="project-stat-label">Total · ${stats.days} day${stats.days===1?"":"s"}</div></div>
+            <div class="project-stat-item"><div class="project-stat-value">${stats.averageHours.toFixed(2)} h</div><div class="project-stat-label">Avg / recorded day</div></div>
+          </div>`;
+        card.querySelector(".project-delete-button").addEventListener("click", () => deleteSubject(subject));
+        container.appendChild(card);
+      });
+    }
+
+    function deleteSubject(subject) {
+      const hasRecords = Object.values(state.records).some(record => record.subjects?.[subject.id]);
+      const warning = hasRecords
+        ? `Delete "${subject.name}" and all of its recorded history? This cannot be undone.`
+        : `Delete "${subject.name}"?`;
+      if (!confirm(warning)) return;
+
+      state.subjects = state.subjects.filter(item => item.id !== subject.id);
+      Object.values(state.records).forEach(record => {
+        if (record.subjects) delete record.subjects[subject.id];
+      });
+      saveState();
+      renderSubjectManager();
+      loadSelectedDay();
+      renderCalendar();
+      updateStats();
+      renderWeeklyChart();
+    }
+
     function updateStats() {
       const year = shownMonth.getFullYear();
       const month = shownMonth.getMonth();
@@ -740,6 +893,9 @@
           breakdown.appendChild(row);
         });
       }
+
+      updateProportionChart(studyMinutes, gymMinutes, pianoMinutes);
+      renderProjectStats();
     }
 
     function renderSubjectManager() {
@@ -760,16 +916,41 @@
 
     function createManageRow(subject,label,archiveValue) {
       const row = document.createElement("div");
+      const stats = getSubjectLifetimeStats(subject);
       row.className = "subject-manage-row";
-      row.innerHTML = `<span class="subject-name">${escapeHtml(subject.name)}</span><button class="archive-button">${label}</button>`;
-      row.querySelector("button").addEventListener("click", () => {
-        subject.archived = archiveValue;
+      const period = subject.archived
+        ? `${formatProjectDate(stats.startDate)} – ${formatProjectDate(stats.endDate)}`
+        : `${formatProjectDate(stats.startDate)} – ongoing`;
+      row.innerHTML = `<div class="subject-manage-main"><div class="subject-name">${escapeHtml(subject.name)}</div><div class="subject-manage-meta">${period} · ${stats.hours.toFixed(1)} h total · ${stats.days} recorded day${stats.days===1?"":"s"} · ${stats.averageHours.toFixed(2)} h/day</div></div><div class="subject-manage-actions"><button class="manage-button rename">Rename</button><button class="archive-button archive-toggle">${label}</button><button class="manage-button delete">Delete</button></div>`;
+
+      row.querySelector(".rename").addEventListener("click", () => {
+        const updatedName = prompt("Rename this project:", subject.name);
+        if (updatedName === null) return;
+        const cleanName = updatedName.trim();
+        if (!cleanName || cleanName === subject.name) return;
+        const duplicate = state.subjects.some(s => s.id !== subject.id && s.name.toLowerCase() === cleanName.toLowerCase());
+        if (duplicate) {
+          alert("A project with that name already exists.");
+          return;
+        }
+        subject.name = cleanName;
         saveState();
-  
-    renderSubjectManager();
+        renderSubjectManager();
         loadSelectedDay();
         updateStats();
       });
+
+      row.querySelector(".archive-toggle").addEventListener("click", () => {
+        subject.archived = archiveValue;
+        if (archiveValue) subject.archivedAt = new Date().toISOString();
+        else delete subject.archivedAt;
+        saveState();
+        renderSubjectManager();
+        loadSelectedDay();
+        updateStats();
+      });
+
+      row.querySelector(".delete").addEventListener("click", () => deleteSubject(subject));
       return row;
     }
 
@@ -852,6 +1033,37 @@
       reader.readAsText(file);
     }
 
+    function activateTab(name) {
+      document.querySelectorAll(".tab-button").forEach(button => button.classList.toggle("active", button.dataset.tab === name));
+      document.querySelectorAll(".tab-page").forEach(page => page.classList.toggle("active", page.id === `tab-${name}`));
+      localStorage.setItem("dailyPracticeActiveTab", name);
+      if (name === "insights") { renderWeeklyChart(); updateStats(); }
+    }
+
+    document.querySelectorAll(".tab-button").forEach(button => {
+      button.addEventListener("click", () => activateTab(button.dataset.tab));
+    });
+
+    function updateProportionChart(studyMinutes, gymMinutes, pianoMinutes) {
+      const total = studyMinutes + gymMinutes + pianoMinutes;
+      const studyPct = total ? studyMinutes / total * 100 : 0;
+      const gymPct = total ? gymMinutes / total * 100 : 0;
+      const pianoPct = total ? pianoMinutes / total * 100 : 0;
+      const chart = document.getElementById("proportionChart");
+      if (!chart) return;
+      if (!total) {
+        chart.style.background = "conic-gradient(#e8e3da 0 100%)";
+      } else {
+        const studyEnd = studyPct;
+        const gymEnd = studyPct + gymPct;
+        chart.style.background = `conic-gradient(var(--study) 0 ${studyEnd}%, var(--gym) ${studyEnd}% ${gymEnd}%, var(--piano) ${gymEnd}% 100%)`;
+      }
+      document.getElementById("proportionTotal").textContent = (total / 60).toFixed(1);
+      document.getElementById("studyShare").textContent = `${Math.round(studyPct)}%`;
+      document.getElementById("gymShare").textContent = `${Math.round(gymPct)}%`;
+      document.getElementById("pianoShare").textContent = `${Math.round(pianoPct)}%`;
+    }
+
     gymEl.addEventListener("change",saveSelectedDay);
     gymMinutesEl.addEventListener("change",saveSelectedDay);
     gymMinutesEl.addEventListener("blur",saveSelectedDay);
@@ -864,7 +1076,7 @@
     document.getElementById("todayButton").addEventListener("click",goToToday);
 
     document.getElementById("manageSubjectsButton").addEventListener("click",() => {
-      document.getElementById("subjectManager").classList.toggle("open");
+      activateTab("settings");
       renderSubjectManager();
     });
 
@@ -892,10 +1104,12 @@
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load",() => {
-        navigator.serviceWorker.register("./service-worker.js?v=8").catch(()=>{});
+        navigator.serviceWorker.register("./service-worker.js?v=9").catch(()=>{});
       });
     }
 
+    const savedTab = localStorage.getItem("dailyPracticeActiveTab") || "home";
+    activateTab(["home","insights","settings"].includes(savedTab) ? savedTab : "home");
     renderSubjectManager();
     loadSelectedDay();
     renderCalendar();
