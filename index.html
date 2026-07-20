@@ -105,7 +105,10 @@
       transform:translateY(-1px) scale(1.03);
     }
     .day.complete{background:#fff3c9;color:#8a6712;font-weight:800;box-shadow:inset 0 0 0 1px rgba(242,182,50,.28)}
-    .dot{position:absolute;left:50%;bottom:5px;width:7px;height:7px;border-radius:50%;transform:translateX(-50%);background:var(--highlight-dot);box-shadow:0 0 0 3px var(--highlight-dot-soft);opacity:1}
+    .day-dots{position:absolute;left:50%;bottom:5px;transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:3px;max-width:88%;pointer-events:none}
+    .project-dot{width:6px;height:6px;border-radius:50%;flex:0 0 auto;box-shadow:0 0 0 1.5px rgba(255,255,255,.82)}
+    .project-dot.more{width:auto;height:10px;min-width:10px;padding:0 2px;border-radius:5px;background:rgba(45,52,47,.12);color:var(--muted);font-size:7px;line-height:10px;font-weight:800;box-shadow:none}
+    .day.selected .project-dot{box-shadow:0 0 0 1.5px rgba(255,255,255,.72)}
 
     .tracking-panel{padding-top:20px}
     .activity-stack{display:flex;flex-direction:column;gap:14px}
@@ -133,7 +136,7 @@
     .track-subline{display:flex;align-items:center;gap:6px;margin-top:3px;color:var(--muted);font-size:14px;font-family:Georgia,"Times New Roman",serif}
 
     .study-card{--cat-accent:#39765d;--cat-soft:#e5f0e9;--cat-line:#d2e2d7;--cat-pill:#f6fbf8}
-    .gym-card{--cat-accent:#b66d3e;--cat-soft:#f6e6db;--cat-line:#ead3c3;--cat-pill:#fff8f3}
+    .gym-card{--cat-accent:#b7891d;--cat-soft:#fff2cc;--cat-line:#eedda7;--cat-pill:#fffaf0}
     .piano-card{--cat-accent:#7164a7;--cat-soft:#ebe8f7;--cat-line:#dcd6ee;--cat-pill:#faf8ff}
 
     .home-tracker .track-title{font-size:14.5px}
@@ -148,21 +151,21 @@
     .study-card .minutes-wrap.compact,.gym-card .minutes-wrap.compact,.piano-card .minutes-wrap.compact{background:var(--cat-pill);border-color:var(--cat-line)}
     .study-card .track-check,.gym-card .track-check,.piano-card .track-check{background:var(--cat-pill)}
     .study-card .track-check{border-color:#bed3c5}
-    .gym-card .track-check{border-color:#dfbea7}
+    .gym-card .track-check{border-color:#e6cc7f}
     .piano-card .track-check{border-color:#c9c0e3}
     .study-card .track-check:checked{background:#39765d;border-color:#39765d;box-shadow:0 0 0 4px rgba(57,118,93,.14)}
-    .gym-card .track-check:checked{background:#b66d3e;border-color:#b66d3e;box-shadow:0 0 0 4px rgba(182,109,62,.14)}
+    .gym-card .track-check:checked{background:#d4a62a;border-color:#d4a62a;box-shadow:0 0 0 4px rgba(212,166,42,.18)}
     .piano-card .track-check:checked{background:#7164a7;border-color:#7164a7;box-shadow:0 0 0 4px rgba(113,100,167,.14)}
     .study-card .track-icon{background:#e5f0e9;color:#39765d;border-color:rgba(57,118,93,.14)}
     .study-card .subject-icon{background:#edf5f0;border-color:rgba(57,118,93,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.75)}
     .subject-icon .doodle-icon{width:18px;height:18px}
     .study-card .subject-track-row .track-main{align-items:center}
-    .gym-card .track-icon{background:#f6e6db;color:#b66d3e;border-color:rgba(182,109,62,.14)}
+    .gym-card .track-icon{background:#fff2cc;color:#b7891d;border-color:rgba(183,137,29,.16)}
     .piano-card .track-icon{background:#ebe8f7;color:#7164a7;border-color:rgba(113,100,167,.14)}
     .track-meta-icon{display:inline-block;font-size:11px;opacity:.7;transform:translateY(-.5px)}
 .track-badge{font-family:Georgia,"Times New Roman",serif;font-size:17px;font-weight:700;line-height:1;color:var(--accent-deep);letter-spacing:-.04em}
     .study-icon .track-badge{color:#3a6f58}
-    .gym-icon .track-badge{color:#8a6b54}
+    .gym-icon .track-badge{color:#9e7a1e}
     .piano-icon .track-badge{color:#6a7868}
     .subject-icon .track-badge{font-size:15px;color:#5f7162}
     .doodle-icon{width:24px;height:24px;display:block;overflow:visible}
@@ -170,9 +173,9 @@
     .doodle-stroke{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
     .doodle-fill{fill:currentColor;opacity:.14;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
     .study-icon{color:#3f765f}
-    .gym-icon{color:#9a6d48}
+    .gym-icon{color:#b7891d}
     .piano-icon{color:#667760}
-    .subject-icon{color:#4f7a66}
+    .subject-icon{color:#a8811b}
     .track-check{-webkit-appearance:none;appearance:none;width:29px;height:29px;border-radius:50%;border:1.5px solid #cfc8ba;background:#f6f3ed;position:relative;flex:0 0 auto}
     .track-check:hover{border-color:#bdb7aa}
     .track-check:checked{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px rgba(55,127,89,.12)}
@@ -328,7 +331,8 @@
       .minutes-wrap.compact input{width:30px;font-size:11.5px}
       .track-check:checked::after{left:8px;top:4px}
       .day{font-size:14px}
-      .dot{bottom:4px;width:6px;height:6px}
+      .day-dots{bottom:4px;gap:2.5px}
+      .project-dot{width:5.5px;height:5.5px}
       .project-stat-grid{grid-template-columns:repeat(2,1fr)}
       .tabbar{top:calc(env(safe-area-inset-top) + 6px);margin-bottom:14px}
       .tab-button{padding:10px 6px;font-size:14px}
@@ -384,7 +388,7 @@
   <path class="doodle-stroke" d="M16 10v15M8.5 13.5c1.8-.2 3.2.2 4.6 1.1M19 14.6c1.5-.9 3-1.3 4.7-1.1"/>
   <path class="doodle-stroke" d="M7 6.5l2-2 2 2"/>
 </svg></div>
-                <div><div class="track-title">Study</div><div class="track-subline">Track by subject</div></div>
+                <div><div class="track-title">Study</div></div>
               </div>
             </div>
             <div class="subject-stack" id="dailySubjectList"></div>
@@ -700,6 +704,28 @@
       return Object.values(record.subjects || {}).some(item => item.done || Number(item.minutes)>0);
     }
 
+
+    const subjectDotPalette = ["#2f8f68", "#4f83b8", "#a56aa5", "#d49a3f", "#5f9b96", "#a86f55", "#7187c7", "#7d9b5a"];
+
+    function subjectDotColor(subjectId) {
+      let hash = 0;
+      for (let i = 0; i < subjectId.length; i++) hash = ((hash << 5) - hash + subjectId.charCodeAt(i)) | 0;
+      return subjectDotPalette[Math.abs(hash) % subjectDotPalette.length];
+    }
+
+    function getCalendarActivities(record) {
+      const activities = [];
+      getActiveSubjects().forEach(subject => {
+        const item = record.subjects?.[subject.id];
+        if (item && (item.done || Number(item.minutes) > 0)) {
+          activities.push({ name: subject.name, color: subjectDotColor(subject.id) });
+        }
+      });
+      if (record.gym || Number(record.gymMinutes) > 0) activities.push({ name: "Gym", color: "var(--gym)" });
+      if (record.piano || Number(record.pianoMinutes) > 0) activities.push({ name: "Piano", color: "var(--piano)" });
+      return activities;
+    }
+
     function renderCalendar() {
       const grid = document.getElementById("calendarGrid");
       grid.innerHTML = "";
@@ -741,13 +767,27 @@
           const complete = studyDone && record.gym && record.piano;
           if (complete) button.classList.add("complete");
 
-          const hasAny = studyDone || record.gym || record.piano ||
-            Number(record.gymMinutes)>0 || Number(record.pianoMinutes)>0;
+          const activities = getCalendarActivities(record);
+          if (activities.length) {
+            const dots = document.createElement("span");
+            dots.className = "day-dots";
+            dots.setAttribute("aria-label", activities.map(item => item.name).join(", "));
+            dots.title = activities.map(item => item.name).join(" · ");
 
-          if (hasAny && !complete) {
-            const dot = document.createElement("span");
-            dot.className = "dot";
-            button.appendChild(dot);
+            activities.slice(0, 6).forEach(activity => {
+              const dot = document.createElement("span");
+              dot.className = "project-dot";
+              dot.style.background = activity.color;
+              dots.appendChild(dot);
+            });
+
+            if (activities.length > 6) {
+              const more = document.createElement("span");
+              more.className = "project-dot more";
+              more.textContent = `+${activities.length - 6}`;
+              dots.appendChild(more);
+            }
+            button.appendChild(dots);
           }
         }
 
