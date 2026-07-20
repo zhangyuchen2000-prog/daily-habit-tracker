@@ -11,7 +11,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=8" />
   <link rel="shortcut icon" type="image/png" href="./icon-192.png?v=8" />
   <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=8" />
-  <link rel="manifest" href="./manifest.json?v=9" />
+  <link rel="manifest" href="./manifest.json?v=10" />
   <style>
     :root{
       --bg:#efece5;
@@ -234,7 +234,8 @@
     .stat-value{margin-bottom:6px;font-size:28px;font-weight:800;letter-spacing:-.05em;color:var(--accent-deep)}
     .stat-label{color:var(--muted);font-size:11px;line-height:1.35}
     .subject-breakdown{margin-top:18px;border-top:1px solid var(--line);padding-top:16px}
-    .breakdown-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+    .breakdown-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+    .breakdown-stats{display:flex;align-items:center;justify-content:flex-end;gap:12px;white-space:nowrap}
     .breakdown-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:620}
     .breakdown-meta{color:var(--muted);font-size:13px}
 
@@ -248,6 +249,16 @@
     .bar-segment.piano{background:var(--piano)}
     .bar-label,.chart-legend{color:var(--muted);font-size:12px}
     .bar-label{margin-top:12px;padding-bottom:18px}
+    .bar-column{cursor:pointer;border-radius:14px;transition:.18s ease;padding-top:6px}
+    .bar-column:hover,.bar-column.active{background:rgba(55,127,89,.06);transform:translateY(-2px)}
+    .daily-distribution{display:none;margin-top:16px;padding:16px 18px;border:1px solid var(--line);border-radius:18px;background:var(--surface-soft)}
+    .daily-distribution.open{display:block}
+    .daily-distribution-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .daily-distribution-title{font-family:Georgia,"Times New Roman",serif;font-size:17px;font-weight:700;color:var(--accent)}
+    .daily-distribution-total{font-size:13px;color:var(--muted);white-space:nowrap}
+    .daily-distribution-list{display:flex;flex-direction:column;gap:9px}
+    .daily-distribution-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:9px;align-items:center;font-size:13px}
+    .daily-distribution-row strong{font-variant-numeric:tabular-nums}
     .chart-legend{display:flex;justify-content:center;flex-wrap:wrap;column-gap:24px;row-gap:10px;margin-top:24px;padding-top:18px;border-top:1px solid var(--line)}
     .legend-item{display:flex;align-items:center;gap:6px}
     .legend-swatch{width:12px;height:12px;border-radius:4px}
@@ -286,7 +297,10 @@
     .compact-stack .subject-track-row{padding:9px 0}
     .analytics-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(240px,.65fr);gap:18px;align-items:start}
     .proportion-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:20px}
-    .proportion-chart{width:180px;aspect-ratio:1;border-radius:50%;margin:20px auto 18px;background:conic-gradient(#e8e3da 0 100%);position:relative}
+    .proportion-chart{width:180px;aspect-ratio:1;border-radius:50%;margin:20px auto 18px;background:conic-gradient(#e8e3da 0 100%);position:relative;cursor:pointer;transition:.18s ease}
+    .proportion-chart:hover{transform:scale(1.015)}
+    .proportion-row{cursor:pointer;border-radius:10px;padding:5px 7px;transition:.18s ease}
+    .proportion-row:hover,.proportion-row.active{background:var(--surface-soft)}
     .proportion-chart::after{content:"";position:absolute;inset:28%;border-radius:50%;background:#fff;box-shadow:0 0 0 1px var(--line)}
     .proportion-total{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:1;flex-direction:column;font-weight:800;color:var(--text);pointer-events:none}
     .proportion-total strong{font-size:26px;line-height:1}
@@ -305,7 +319,7 @@
       .panel{padding:18px;border-radius:24px}
       .stats-grid{grid-template-columns:repeat(2,1fr)}
       .breakdown-row{grid-template-columns:minmax(0,1fr) auto}
-      .breakdown-row .breakdown-meta:last-child{grid-column:2}
+      .breakdown-stats{gap:9px}
       .chart{gap:8px;height:215px}
       .track-entry,.track-card-header,.subject-stack{padding-left:14px;padding-right:14px}
       .track-check{width:28px;height:28px}
@@ -403,7 +417,7 @@
         <section class="panel">
           <h2 class="section-title">Last 7 Days</h2>
           <p class="section-subtitle">Recorded time by activity.</p>
-          <div class="chart-wrap"><div class="chart" id="weeklyChart"></div><div class="chart-legend"><span class="legend-item"><span class="legend-swatch study"></span>Study</span><span class="legend-item"><span class="legend-swatch gym"></span>Gym</span><span class="legend-item"><span class="legend-swatch piano"></span>Piano</span></div></div>
+          <div class="chart-wrap"><div class="chart" id="weeklyChart"></div><div class="chart-legend"><span class="legend-item"><span class="legend-swatch study"></span>Study</span><span class="legend-item"><span class="legend-swatch gym"></span>Gym</span><span class="legend-item"><span class="legend-swatch piano"></span>Piano</span></div><div class="daily-distribution" id="dailyDistribution"></div></div>
         </section>
 
         <section class="proportion-card">
@@ -411,9 +425,9 @@
           <p class="section-subtitle">This month by recorded minutes.</p>
           <div class="proportion-chart" id="proportionChart"><div class="proportion-total"><strong id="proportionTotal">0.0</strong><span>hours</span></div></div>
           <div class="proportion-legend">
-            <div class="proportion-row"><span class="legend-swatch study"></span><span>Study</span><strong id="studyShare">0%</strong></div>
-            <div class="proportion-row"><span class="legend-swatch gym"></span><span>Gym</span><strong id="gymShare">0%</strong></div>
-            <div class="proportion-row"><span class="legend-swatch piano"></span><span>Piano</span><strong id="pianoShare">0%</strong></div>
+            <div class="proportion-row" data-proportion-type="study"><span class="legend-swatch study"></span><span>Study</span><strong id="studyShare">0%</strong></div>
+            <div class="proportion-row" data-proportion-type="gym"><span class="legend-swatch gym"></span><span>Gym</span><strong id="gymShare">0%</strong></div>
+            <div class="proportion-row" data-proportion-type="piano"><span class="legend-swatch piano"></span><span>Piano</span><strong id="pianoShare">0%</strong></div>
           </div>
         </section>
       </div>
@@ -456,6 +470,7 @@
     const STORAGE_KEY = "dailyPracticeV5";
     const OLD_V4_KEY = "dailyPracticeV4";
     const OLD_V2_KEY = "habitTrackerDataV2";
+    const SUBJECT_SETUP_KEY = "dailyPracticeSubjectSetup20260720";
 
     const defaultState = {
       subjects: [{ id:"general-study", name:"General Study", archived:false, createdAt:new Date().toISOString() }],
@@ -476,12 +491,47 @@
       return JSON.parse(JSON.stringify(defaultState));
     }
 
+    function applyOneTimeSubjectSetup(loadedState) {
+      if (localStorage.getItem(SUBJECT_SETUP_KEY)) return loadedState;
+
+      const subjects = Array.isArray(loadedState.subjects) ? loadedState.subjects : [];
+      const findByName = (...names) => subjects.find(subject =>
+        names.some(name => String(subject.name || "").trim().toLowerCase() === name.toLowerCase())
+      );
+
+      // Keep the existing COMPSCI 225 project and its history, but standardise its label.
+      const compsci225 = findByName("Compsci 225", "COMPSCI225", "COMPSCI 225");
+      if (compsci225) {
+        compsci225.name = "COMPSCI 225";
+        compsci225.archived = false;
+        delete compsci225.archivedAt;
+      } else {
+        subjects.push({ id:createId("COMPSCI 225"), name:"COMPSCI 225", archived:false, createdAt:new Date().toISOString() });
+      }
+
+      ["Business", "COMPSCI 230"].forEach(name => {
+        const existing = findByName(name, name.replace(" ", ""));
+        if (existing) {
+          existing.name = name;
+          existing.archived = false;
+          delete existing.archivedAt;
+        } else {
+          subjects.push({ id:createId(name), name, archived:false, createdAt:new Date().toISOString() });
+        }
+      });
+
+      loadedState.subjects = subjects;
+      localStorage.setItem(SUBJECT_SETUP_KEY, "done");
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(loadedState));
+      return loadedState;
+    }
+
     function loadState() {
       const current = localStorage.getItem(STORAGE_KEY);
       if (current) {
         try {
           const parsed = JSON.parse(current);
-          if (parsed.subjects && parsed.records) return parsed;
+          if (parsed.subjects && parsed.records) return applyOneTimeSubjectSetup(parsed);
         } catch {}
       }
 
@@ -494,7 +544,7 @@
             delete record.note;
           });
           localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
-          return parsed;
+          return applyOneTimeSubjectSetup(parsed);
         } catch {}
       }
 
@@ -515,11 +565,11 @@
             };
           });
           localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
-          return migrated;
+          return applyOneTimeSubjectSetup(migrated);
         } catch {}
       }
 
-      return cloneDefault();
+      return applyOneTimeSubjectSetup(cloneDefault());
     }
 
     function saveState() {
@@ -729,9 +779,11 @@
         const record = getRecord(toDateKey(date));
         dates.push({
           date,
+          dateKey:toDateKey(date),
           study:getStudyMinutes(record),
           gym:Number(record.gymMinutes)||0,
-          piano:Number(record.pianoMinutes)||0
+          piano:Number(record.pianoMinutes)||0,
+          record
         });
       }
 
@@ -744,6 +796,9 @@
 
         const column = document.createElement("div");
         column.className = "bar-column";
+        column.tabIndex = 0;
+        column.setAttribute("role","button");
+        column.setAttribute("aria-label",`Show distribution for ${item.date.toLocaleDateString("en-NZ",{weekday:"long",day:"numeric",month:"long"})}`);
 
         const totalLabel = document.createElement("div");
         totalLabel.className = "bar-total";
@@ -770,9 +825,48 @@
         label.className = "bar-label";
         label.textContent = item.date.toLocaleDateString("en-NZ",{ weekday:"short" });
 
+        const openDetail = () => showDailyDistribution(item, column);
+        column.addEventListener("click", openDetail);
+        column.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openDetail(); }
+        });
+
         column.append(totalLabel, stack, label);
         chart.appendChild(column);
       });
+    }
+
+    function showDailyDistribution(item, activeColumn) {
+      document.querySelectorAll(".bar-column").forEach(column => column.classList.toggle("active", column === activeColumn));
+      const panel = document.getElementById("dailyDistribution");
+      const total = item.study + item.gym + item.piano;
+      const subjectRows = state.subjects.map(subject => {
+        const entry = item.record.subjects?.[subject.id];
+        const minutes = Number(entry?.minutes) || 0;
+        return { name:subject.name, minutes };
+      }).filter(row => row.minutes > 0).sort((a,b) => b.minutes-a.minutes);
+
+      const rows = [
+        ...subjectRows.map(row => ({type:"study", name:row.name, minutes:row.minutes})),
+        ...(item.gym ? [{type:"gym", name:"Gym", minutes:item.gym}] : []),
+        ...(item.piano ? [{type:"piano", name:"Piano", minutes:item.piano}] : [])
+      ];
+
+      const dateLabel = item.date.toLocaleDateString("en-NZ", { weekday:"long", day:"numeric", month:"long" });
+      panel.innerHTML = `
+        <div class="daily-distribution-head">
+          <div class="daily-distribution-title">${dateLabel}</div>
+          <div class="daily-distribution-total">${total ? `${total} min · ${(total/60).toFixed(1)} h` : "No recorded time"}</div>
+        </div>
+        <div class="daily-distribution-list">
+          ${rows.length ? rows.map(row => `
+            <div class="daily-distribution-row">
+              <span class="legend-swatch ${row.type}"></span>
+              <span>${escapeHtml(row.name)}</span>
+              <strong>${row.minutes} min</strong>
+            </div>`).join("") : '<div class="empty-state">Nothing was recorded on this day.</div>'}
+        </div>`;
+      panel.classList.add("open");
     }
 
     function formatProjectDate(dateKey) {
@@ -820,36 +914,55 @@
       if (!container) return;
       container.innerHTML = "";
 
-      const subjects = [...state.subjects].sort((a,b) => {
-        const aStats = getSubjectLifetimeStats(a);
-        const bStats = getSubjectLifetimeStats(b);
-        return bStats.minutes - aStats.minutes || a.name.localeCompare(b.name);
-      });
+      // Insights mirrors the subjects currently visible on Home.
+      const projects = getActiveSubjects().map(subject => ({
+        kind:"subject",
+        subject,
+        name:subject.name,
+        archived:false,
+        stats:getSubjectLifetimeStats(subject)
+      }));
 
-      if (!subjects.length) {
-        container.innerHTML = '<div class="empty-state">No subjects yet.</div>';
-        return;
-      }
+      const activityStats = (type) => {
+        let firstDate=null, lastDate=null, days=0, minutes=0;
+        Object.entries(state.records).forEach(([dateKey,record]) => {
+          const value = Number(record[`${type}Minutes`]) || 0;
+          const recorded = Boolean(record[type]) || value > 0;
+          if (!recorded) return;
+          days += 1; minutes += value;
+          if (!firstDate || dateKey < firstDate) firstDate = dateKey;
+          if (!lastDate || dateKey > lastDate) lastDate = dateKey;
+        });
+        return {startDate:firstDate,endDate:null,lastDate,days,minutes,hours:minutes/60,averageHours:days?(minutes/60)/days:0};
+      };
 
-      subjects.forEach(subject => {
-        const stats = getSubjectLifetimeStats(subject);
+      projects.push(
+        {kind:"activity",name:"Gym",archived:false,stats:activityStats("gym")},
+        {kind:"activity",name:"Piano",archived:false,stats:activityStats("piano")}
+      );
+
+      projects.sort((a,b) => b.stats.minutes-a.stats.minutes || a.name.localeCompare(b.name));
+
+      projects.forEach(project => {
+        const stats = project.stats;
         const card = document.createElement("div");
         card.className = "project-stat-card";
+        const canDelete = project.kind === "subject";
         card.innerHTML = `
           <div class="project-stat-head">
-            <div class="project-stat-name">${escapeHtml(subject.name)}</div>
+            <div class="project-stat-name">${escapeHtml(project.name)}</div>
             <div class="project-stat-actions">
-              <span class="project-status ${subject.archived ? "archived" : ""}">${subject.archived ? "Archived" : "Active"}</span>
-              <button class="project-delete-button" type="button">Delete</button>
+              <span class="project-status ${project.archived ? "archived" : ""}">${project.archived ? "Archived" : "Active"}</span>
+              ${canDelete ? '<button class="project-delete-button" type="button">Delete</button>' : ''}
             </div>
           </div>
           <div class="project-stat-grid">
             <div class="project-stat-item"><div class="project-stat-value">${formatProjectDate(stats.startDate)}</div><div class="project-stat-label">Started</div></div>
-            <div class="project-stat-item"><div class="project-stat-value">${subject.archived ? formatProjectDate(stats.endDate) : "Ongoing"}</div><div class="project-stat-label">Ended</div></div>
+            <div class="project-stat-item"><div class="project-stat-value">${project.archived ? formatProjectDate(stats.endDate) : "Ongoing"}</div><div class="project-stat-label">Ended</div></div>
             <div class="project-stat-item"><div class="project-stat-value">${stats.hours.toFixed(1)} h</div><div class="project-stat-label">Total · ${stats.days} day${stats.days===1?"":"s"}</div></div>
             <div class="project-stat-item"><div class="project-stat-value">${stats.averageHours.toFixed(2)} h</div><div class="project-stat-label">Avg / recorded day</div></div>
           </div>`;
-        card.querySelector(".project-delete-button").addEventListener("click", () => deleteSubject(subject));
+        if (canDelete) card.querySelector(".project-delete-button").addEventListener("click", () => deleteSubject(project.subject));
         container.appendChild(card);
       });
     }
@@ -880,7 +993,8 @@
       let studyDays=0, studyMinutes=0, gymDays=0, gymMinutes=0, pianoDays=0, pianoMinutes=0;
       const bySubject = {};
 
-      state.subjects.forEach(subject => {
+      // Monthly Summary mirrors the active subjects shown on Home only.
+      getActiveSubjects().forEach(subject => {
         bySubject[subject.id] = { name:subject.name, days:0, minutes:0 };
       });
 
@@ -896,10 +1010,13 @@
         pianoMinutes += Number(record.pianoMinutes)||0;
 
         Object.entries(record.subjects || {}).forEach(([id,item]) => {
-          if (!bySubject[id]) bySubject[id] = { name:"Archived subject", days:0, minutes:0 };
-          if (item.done || Number(item.minutes)>0) bySubject[id].days++;
-          bySubject[id].minutes += Number(item.minutes)||0;
-          studyMinutes += Number(item.minutes)||0;
+          const itemMinutes = Number(item.minutes) || 0;
+          // Total study time still includes recorded history, but the visible
+          // subject list only contains subjects currently shown on Home.
+          studyMinutes += itemMinutes;
+          if (!bySubject[id]) return;
+          if (item.done || itemMinutes > 0) bySubject[id].days++;
+          bySubject[id].minutes += itemMinutes;
         });
       });
 
@@ -913,19 +1030,20 @@
       const breakdown = document.getElementById("subjectBreakdown");
       breakdown.innerHTML = "";
       const rows = Object.values(bySubject)
-        .filter(item => item.days>0 || item.minutes>0)
-        .sort((a,b) => b.minutes-a.minutes || b.days-a.days);
+        .sort((a,b) => b.minutes-a.minutes || b.days-a.days || a.name.localeCompare(b.name));
 
       if (!rows.length) {
-        breakdown.innerHTML = '<div class="empty-state">No study activity recorded this month.</div>';
+        breakdown.innerHTML = '<div class="empty-state">No study projects created yet.</div>';
       } else {
         rows.forEach(item => {
           const row = document.createElement("div");
           row.className = "breakdown-row";
           row.innerHTML = `
             <div class="breakdown-name">${escapeHtml(item.name)}</div>
-            <div class="breakdown-meta">${item.days} day${item.days===1?"":"s"}</div>
-            <div class="breakdown-meta">${(item.minutes/60).toFixed(1)} h</div>`;
+            <div class="breakdown-stats">
+              <span class="breakdown-meta">${item.days} day${item.days===1?"":"s"}</span>
+              <span class="breakdown-meta">${(item.minutes/60).toFixed(1)} h</span>
+            </div>`;
           breakdown.appendChild(row);
         });
       }
@@ -1080,11 +1198,19 @@
       button.addEventListener("click", () => activateTab(button.dataset.tab));
     });
 
+    let proportionData = { study:0, gym:0, piano:0, total:0 };
+
     function updateProportionChart(studyMinutes, gymMinutes, pianoMinutes) {
       const total = studyMinutes + gymMinutes + pianoMinutes;
       const studyPct = total ? studyMinutes / total * 100 : 0;
       const gymPct = total ? gymMinutes / total * 100 : 0;
       const pianoPct = total ? pianoMinutes / total * 100 : 0;
+      proportionData = {
+        study:{label:"Study",minutes:studyMinutes,pct:studyPct},
+        gym:{label:"Gym",minutes:gymMinutes,pct:gymPct},
+        piano:{label:"Piano",minutes:pianoMinutes,pct:pianoPct},
+        total
+      };
       const chart = document.getElementById("proportionChart");
       if (!chart) return;
       if (!total) {
@@ -1095,10 +1221,37 @@
         chart.style.background = `conic-gradient(var(--study) 0 ${studyEnd}%, var(--gym) ${studyEnd}% ${gymEnd}%, var(--piano) ${gymEnd}% 100%)`;
       }
       document.getElementById("proportionTotal").textContent = (total / 60).toFixed(1);
+      document.querySelector(".proportion-total span").textContent = "hours";
       document.getElementById("studyShare").textContent = `${Math.round(studyPct)}%`;
       document.getElementById("gymShare").textContent = `${Math.round(gymPct)}%`;
       document.getElementById("pianoShare").textContent = `${Math.round(pianoPct)}%`;
+      document.querySelectorAll(".proportion-row").forEach(row => row.classList.remove("active"));
     }
+
+    function showProportionSelection(type) {
+      const item = proportionData[type];
+      if (!item) return;
+      document.getElementById("proportionTotal").textContent = `${Math.round(item.pct)}%`;
+      document.querySelector(".proportion-total span").textContent = item.label;
+      document.querySelectorAll(".proportion-row").forEach(row => row.classList.toggle("active", row.dataset.proportionType === type));
+    }
+
+    document.getElementById("proportionChart").addEventListener("click", event => {
+      if (!proportionData.total) return;
+      const rect = event.currentTarget.getBoundingClientRect();
+      const x = event.clientX - (rect.left + rect.width/2);
+      const y = event.clientY - (rect.top + rect.height/2);
+      let angle = Math.atan2(y,x) * 180 / Math.PI + 90;
+      if (angle < 0) angle += 360;
+      const pct = angle / 360 * 100;
+      const studyEnd = proportionData.study.pct;
+      const gymEnd = studyEnd + proportionData.gym.pct;
+      showProportionSelection(pct < studyEnd ? "study" : pct < gymEnd ? "gym" : "piano");
+    });
+
+    document.querySelectorAll("[data-proportion-type]").forEach(row => {
+      row.addEventListener("click", () => showProportionSelection(row.dataset.proportionType));
+    });
 
     gymEl.addEventListener("change",saveSelectedDay);
     gymMinutesEl.addEventListener("change",saveSelectedDay);
@@ -1140,7 +1293,7 @@
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load",() => {
-        navigator.serviceWorker.register("./service-worker.js?v=9").catch(()=>{});
+        navigator.serviceWorker.register("./service-worker.js?v=10").catch(()=>{});
       });
     }
 
