@@ -62,6 +62,8 @@
       margin:0;color:var(--accent);font-family:Georgia,"Times New Roman",serif;
       font-size:clamp(52px,10vw,82px);line-height:.88;font-weight:700;letter-spacing:-.05em;
     }
+    .today-day{font-size:.68em;vertical-align:.08em;letter-spacing:-.03em}
+    .today-month{font-size:1em}
 
     .pill-button,.secondary-button,.primary-button,.archive-button,.icon-button{
       transition:.18s ease;cursor:pointer;
@@ -135,7 +137,7 @@
     .subject-track-title{font-size:16px;font-family:Georgia,"Times New Roman",serif}
     .track-subline{display:flex;align-items:center;gap:6px;margin-top:3px;color:var(--muted);font-size:14px;font-family:Georgia,"Times New Roman",serif}
 
-    .study-card{--cat-accent:#39765d;--cat-soft:#e5f0e9;--cat-line:#d2e2d7;--cat-pill:#f6fbf8}
+    .study-card{--cat-accent:var(--study);--cat-soft:#e5f0e9;--cat-line:#d2e2d7;--cat-pill:#f6fbf8}
     .gym-card{--cat-accent:#b7891d;--cat-soft:#fff2cc;--cat-line:#eedda7;--cat-pill:#fffaf0}
     .piano-card{--cat-accent:#7164a7;--cat-soft:#ebe8f7;--cat-line:#dcd6ee;--cat-pill:#faf8ff}
 
@@ -153,7 +155,7 @@
     .study-card .track-check{border-color:#bed3c5}
     .gym-card .track-check{border-color:#e6cc7f}
     .piano-card .track-check{border-color:#c9c0e3}
-    .study-card .track-check:checked{background:#39765d;border-color:#39765d;box-shadow:0 0 0 4px rgba(57,118,93,.14)}
+    .study-card .track-check:checked{background:var(--study);border-color:var(--study);box-shadow:0 0 0 4px rgba(57,118,93,.14)}
     .gym-card .track-check:checked{background:#d4a62a;border-color:#d4a62a;box-shadow:0 0 0 4px rgba(212,166,42,.18)}
     .piano-card .track-check:checked{background:#7164a7;border-color:#7164a7;box-shadow:0 0 0 4px rgba(113,100,167,.14)}
     .study-card .track-icon{background:#e5f0e9;color:#39765d;border-color:rgba(57,118,93,.14)}
@@ -224,6 +226,16 @@
     .project-status{flex:0 0 auto;padding:5px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent-deep);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
     .project-status.archived{background:#f1ece5;color:#8b6a4d}
     .project-stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .weekly-goal{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+    .weekly-goal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px}
+    .weekly-goal-title{font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+    .weekly-target-control{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border:1px solid var(--line);border-radius:999px;background:var(--surface-soft)}
+    .weekly-target-control input{width:48px;border:0;background:transparent;outline:none;text-align:right;color:var(--text);font-weight:750}
+    .weekly-target-control span{font-size:12px;color:var(--muted)}
+    .weekly-progress-track{height:11px;border-radius:999px;background:#ece8e0;overflow:hidden;box-shadow:inset 0 1px 2px rgba(45,52,47,.08)}
+    .weekly-progress-fill{height:100%;border-radius:inherit;background:var(--accent);transition:width .25s ease}
+    .weekly-progress-meta{display:flex;justify-content:space-between;gap:12px;margin-top:7px;color:var(--muted);font-size:12px}
+    .weekly-progress-meta strong{color:var(--text);font-weight:750}
     .project-stat-item{padding:10px 12px;border-radius:15px;background:var(--surface-soft);border:1px solid var(--line)}
     .project-stat-value{font-size:14px;font-weight:760;color:var(--text)}
     .project-stat-label{margin-top:4px;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.08em}
@@ -350,7 +362,8 @@
   <main class="app">
     <header class="topbar">
       <div>
-        <h1>Everyday</h1>
+        <p class="eyebrow" id="todayWeekday"></p>
+        <h1 id="todayDate"></h1>
       </div>
       <button class="pill-button" id="todayButton">Today</button>
     </header>
@@ -477,7 +490,8 @@
     const SUBJECT_SETUP_KEY = "dailyPracticeSubjectSetup20260720";
 
     const defaultState = {
-      subjects: [{ id:"general-study", name:"General Study", archived:false, createdAt:new Date().toISOString() }],
+      subjects: [{ id:"general-study", name:"General Study", archived:false, weeklyTargetHours:0, createdAt:new Date().toISOString() }],
+      activityTargets: { gym:0, piano:0 },
       records: {}
     };
 
@@ -510,7 +524,7 @@
         compsci225.archived = false;
         delete compsci225.archivedAt;
       } else {
-        subjects.push({ id:createId("COMPSCI 225"), name:"COMPSCI 225", archived:false, createdAt:new Date().toISOString() });
+        subjects.push({ id:createId("COMPSCI 225"), name:"COMPSCI 225", archived:false, weeklyTargetHours:0, createdAt:new Date().toISOString() });
       }
 
       ["Business", "COMPSCI 230"].forEach(name => {
@@ -520,7 +534,7 @@
           existing.archived = false;
           delete existing.archivedAt;
         } else {
-          subjects.push({ id:createId(name), name, archived:false, createdAt:new Date().toISOString() });
+          subjects.push({ id:createId(name), name, archived:false, weeklyTargetHours:0, createdAt:new Date().toISOString() });
         }
       });
 
@@ -576,7 +590,20 @@
       return applyOneTimeSubjectSetup(cloneDefault());
     }
 
+    function normaliseStateShape(targetState) {
+      if (!targetState.activityTargets) targetState.activityTargets = { gym:0, piano:0 };
+      targetState.activityTargets.gym = Math.max(0, Number(targetState.activityTargets.gym) || 0);
+      targetState.activityTargets.piano = Math.max(0, Number(targetState.activityTargets.piano) || 0);
+      (targetState.subjects || []).forEach(subject => {
+        subject.weeklyTargetHours = Math.max(0, Number(subject.weeklyTargetHours) || 0);
+      });
+      return targetState;
+    }
+
+    state = normaliseStateShape(state);
+
     function saveState() {
+      normaliseStateShape(state);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }
 
@@ -705,20 +732,12 @@
     }
 
 
-    const subjectDotPalette = ["#2f8f68", "#4f83b8", "#a56aa5", "#d49a3f", "#5f9b96", "#a86f55", "#7187c7", "#7d9b5a"];
-
-    function subjectDotColor(subjectId) {
-      let hash = 0;
-      for (let i = 0; i < subjectId.length; i++) hash = ((hash << 5) - hash + subjectId.charCodeAt(i)) | 0;
-      return subjectDotPalette[Math.abs(hash) % subjectDotPalette.length];
-    }
-
     function getCalendarActivities(record) {
       const activities = [];
       getActiveSubjects().forEach(subject => {
         const item = record.subjects?.[subject.id];
         if (item && (item.done || Number(item.minutes) > 0)) {
-          activities.push({ name: subject.name, color: subjectDotColor(subject.id) });
+          activities.push({ name: subject.name, color: "var(--study)" });
         }
       });
       if (record.gym || Number(record.gymMinutes) > 0) activities.push({ name: "Gym", color: "var(--gym)" });
@@ -949,17 +968,41 @@
       };
     }
 
+    function getCurrentWeekRange() {
+      const now = new Date();
+      now.setHours(12,0,0,0);
+      const day = now.getDay();
+      const mondayOffset = day === 0 ? -6 : 1 - day;
+      const start = new Date(now);
+      start.setDate(now.getDate() + mondayOffset);
+      const end = new Date(start);
+      end.setDate(start.getDate() + 6);
+      return { startKey:toDateKey(start), endKey:toDateKey(end) };
+    }
+
+    function getWeeklyProjectMinutes(project) {
+      const { startKey, endKey } = getCurrentWeekRange();
+      let minutes = 0;
+      Object.entries(state.records).forEach(([dateKey, record]) => {
+        if (dateKey < startKey || dateKey > endKey) return;
+        if (project.kind === "subject") {
+          minutes += Number(record.subjects?.[project.subject.id]?.minutes) || 0;
+        } else {
+          minutes += Number(record[`${project.type}Minutes`]) || 0;
+        }
+      });
+      return minutes;
+    }
+
     function renderProjectStats() {
       const container = document.getElementById("projectStatsList");
       if (!container) return;
       container.innerHTML = "";
 
-      // Insights mirrors the subjects currently visible on Home.
+      // Keep exactly the same order as Home: study projects first, then Gym and Piano.
       const projects = getActiveSubjects().map(subject => ({
-        kind:"subject",
-        subject,
-        name:subject.name,
-        archived:false,
+        kind:"subject", subject, name:subject.name, archived:false,
+        targetHours:Number(subject.weeklyTargetHours) || 0,
         stats:getSubjectLifetimeStats(subject)
       }));
 
@@ -977,14 +1020,17 @@
       };
 
       projects.push(
-        {kind:"activity",name:"Gym",archived:false,stats:activityStats("gym")},
-        {kind:"activity",name:"Piano",archived:false,stats:activityStats("piano")}
+        {kind:"activity",type:"gym",name:"Gym",archived:false,targetHours:Number(state.activityTargets.gym)||0,stats:activityStats("gym")},
+        {kind:"activity",type:"piano",name:"Piano",archived:false,targetHours:Number(state.activityTargets.piano)||0,stats:activityStats("piano")}
       );
-
-      projects.sort((a,b) => b.stats.minutes-a.stats.minutes || a.name.localeCompare(b.name));
 
       projects.forEach(project => {
         const stats = project.stats;
+        const weeklyMinutes = getWeeklyProjectMinutes(project);
+        const weeklyHours = weeklyMinutes / 60;
+        const targetHours = project.targetHours;
+        const percent = targetHours > 0 ? Math.min(100, weeklyHours / targetHours * 100) : 0;
+        const remaining = Math.max(0, targetHours - weeklyHours);
         const card = document.createElement("div");
         card.className = "project-stat-card";
         const canDelete = project.kind === "subject";
@@ -1001,7 +1047,32 @@
             <div class="project-stat-item"><div class="project-stat-value">${project.archived ? formatProjectDate(stats.endDate) : "Ongoing"}</div><div class="project-stat-label">Ended</div></div>
             <div class="project-stat-item"><div class="project-stat-value">${stats.hours.toFixed(1)} h</div><div class="project-stat-label">Total · ${stats.days} day${stats.days===1?"":"s"}</div></div>
             <div class="project-stat-item"><div class="project-stat-value">${stats.averageHours.toFixed(2)} h</div><div class="project-stat-label">Avg / recorded day</div></div>
+          </div>
+          <div class="weekly-goal">
+            <div class="weekly-goal-head">
+              <div class="weekly-goal-title">This week</div>
+              <label class="weekly-target-control" title="Set weekly target">
+                <input type="number" min="0" step="0.5" inputmode="decimal" value="${targetHours || ""}" placeholder="0" aria-label="Weekly target hours for ${escapeHtml(project.name)}">
+                <span>h / week</span>
+              </label>
+            </div>
+            <div class="weekly-progress-track"><div class="weekly-progress-fill" style="width:${percent}%"></div></div>
+            <div class="weekly-progress-meta">
+              <span><strong>${weeklyHours.toFixed(1)} / ${targetHours ? targetHours.toFixed(1) : "—"} h</strong></span>
+              <span>${targetHours ? (remaining > 0 ? `${remaining.toFixed(1)} h left` : "Goal reached") : "Set a weekly goal"}</span>
+            </div>
           </div>`;
+
+        const targetInput = card.querySelector(".weekly-target-control input");
+        const saveTarget = () => {
+          const value = Math.max(0, Number(targetInput.value) || 0);
+          if (project.kind === "subject") project.subject.weeklyTargetHours = value;
+          else state.activityTargets[project.type] = value;
+          saveState();
+          renderProjectStats();
+        };
+        targetInput.addEventListener("change", saveTarget);
+        targetInput.addEventListener("blur", saveTarget);
         if (canDelete) card.querySelector(".project-delete-button").addEventListener("click", () => deleteSubject(project.subject));
         container.appendChild(card);
       });
@@ -1160,7 +1231,7 @@
       }
 
       state.subjects.push({
-        id:createId(name), name, archived:false, createdAt:new Date().toISOString()
+        id:createId(name), name, archived:false, weeklyTargetHours:0, createdAt:new Date().toISOString()
       });
 
       input.value = "";
@@ -1176,6 +1247,16 @@
       loadSelectedDay();
       renderCalendar();
       updateStats();
+    }
+
+    function updateHeaderDate() {
+      const today = new Date();
+      document.getElementById("todayWeekday").textContent = today.toLocaleDateString("en-NZ", {
+        weekday:"long", year:"numeric"
+      });
+      const day = today.toLocaleDateString("en-NZ", { day:"numeric" });
+      const month = today.toLocaleDateString("en-NZ", { month:"long" });
+      document.getElementById("todayDate").innerHTML = `<span class="today-day">${day}</span> <span class="today-month">${month}</span>`;
     }
 
     function goToToday() {
@@ -1212,7 +1293,7 @@
             delete record.note;
           });
 
-          state = imported;
+          state = normaliseStateShape(imported);
           saveState();
           renderSubjectManager();
           loadSelectedDay();
@@ -1336,6 +1417,11 @@
         navigator.serviceWorker.register("./service-worker.js?v=10").catch(()=>{});
       });
     }
+
+    updateHeaderDate();
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) updateHeaderDate();
+    });
 
     const savedTab = localStorage.getItem("dailyPracticeActiveTab") || "home";
     activateTab(["home","insights","settings"].includes(savedTab) ? savedTab : "home");
